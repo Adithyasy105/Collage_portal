@@ -1,0 +1,23 @@
+# Ignore environment files
+backend/.env
+frontend/.env
+
+# Node modules
+backend/node_modules/
+frontend/node_modules/
+
+# Logs
+*.log
+
+# Build output
+backend/dist/
+frontend/build/
+frontend/dist/
+
+# IDE/editor files
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db

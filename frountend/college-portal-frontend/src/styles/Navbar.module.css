@@ -1,0 +1,199 @@
+/* Color Palette & Fonts */
+:root {
+  --color-primary: #004d9c;
+  --color-primary-dark: #003387;
+  --color-secondary: #f0a301;
+  --color-secondary-dark: #cc8700;
+  --color-bg-light: #f7f9fc;
+  --color-bg-dark: #2c3e50;
+  --color-text: #333;
+  --color-text-light: #777;
+  --color-white: #fff;
+  --font-sans: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --transition-speed: 0.3s;
+}
+
+/* Base Navbar Styles (Desktop First) */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.navbarBrand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  white-space: nowrap;
+}
+
+.navbarLinks {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.navLink {
+  background: none;
+  border: none;
+  color: var(--color-text-light);
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 0.25rem 0;
+  cursor: pointer;
+  position: relative;
+  transition: color var(--transition-speed);
+}
+
+.navLink:hover {
+  color: var(--color-primary);
+}
+
+.navLink::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: var(--color-primary);
+  transition: width var(--transition-speed);
+}
+
+.navLink:hover::after {
+  width: 100%;
+}
+
+.loginBtn {
+  background-color: var(--color-secondary);
+  border: none;
+  color: var(--color-white);
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed), transform var(--transition-speed);
+  white-space: nowrap;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.loginBtn:hover {
+  background-color: var(--color-secondary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.navbarToggle {
+  display: none; /* Hidden on desktop */
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+}
+
+.hamburger {
+  width: 100%;
+  height: 3px;
+  background: var(--color-primary);
+  border-radius: 10px;
+  transition: var(--transition);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .navbarToggle {
+    display: flex; /* Show on mobile */
+    align-self: flex-start;
+  }
+  
+  .navbarBrand {
+    flex-grow: 1;
+    text-align: center;
+  }
+  
+  .navbarLinks {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    padding: 1rem 0;
+    gap: 0;
+    transform: translateY(-100%);
+    opacity: 0;
+    transition: transform var(--transition-speed) ease-in-out, opacity var(--transition-speed) ease-in-out;
+    pointer-events: none;
+  }
+  
+  .navbarLinks.active {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .navLink {
+    text-align: center;
+    padding: 1rem 0;
+    width: 100%;
+  }
+  
+  .navLink:hover {
+    background-color: rgba(0, 77, 156, 0.1);
+  }
+
+  .navLink::after {
+    display: none;
+  }
+
+  .loginBtn {
+    width: 90%;
+    margin: 1rem auto 0;
+    text-align: center;
+  }
+  
+  /* Hamburger Animation */
+  .navbarToggle.active .hamburger:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+  
+  .navbarToggle.active .hamburger:nth-child(2) {
+    opacity: 0;
+  }
+  
+  .navbarToggle.active .hamburger:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+}

@@ -1,0 +1,518 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/**
+ * =========================
+ * Core auth / people
+ * =========================
+ */
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // One-to-one links
+  student Student?
+  staff   Staff?
+
+  // Relations
+  helpRequests HelpRequest[]
+  resetTokens  PasswordResetToken[]
+
+  // Audit
+  auditLogs AuditLog[] @relation("AuditByUser")
+}
+
+model Student {
+  id              Int     @id @default(autoincrement())
+  rollNumber      String  @unique
+  admissionYear   Int
+  currentSemester Int
+  photoUrl        String? // Supabase Storage URL
+
+  // NEW: profile + compliance
+  dob      DateTime?
+  gender   Gender?
+  category Category?
+  address  String?
+  city     String?
+  state    String?
+  pincode  String?
+
+  guardianName  String?
+  guardianPhone String?
+  guardianEmail String?
+
+  // Foreign keys
+  userId Int?  @unique
+  user   User? @relation(fields: [userId], references: [id])
+
+  programId Int
+  program   Program @relation(fields: [programId], references: [id])
+
+  // Current section (optional if you want historical in Enrollment)
+  sectionId Int?
+  section   Section? @relation(fields: [sectionId], references: [id])
+
+  // Relations
+  enrollments Enrollment[]
+  marks       Mark[]
+  attendance  Attendance[]
+  feedbacks   Feedback[]
+  messages    MessageLog[]
+  results     Result[]
+}
+
+model Staff {
+  id          Int     @id @default(autoincrement())
+  employeeId  String  @unique
+  designation String
+  photoUrl    String?
+
+  // NEW: HR info
+  phone         String?
+  emailAlt      String?
+  qualification String?
+  joiningDate   DateTime?
+
+  // Foreign keys
+  userId Int?  @unique
+  user   User? @relation(fields: [userId], references: [id])
+
+  departmentId Int
+  department   Department @relation(fields: [departmentId], references: [id])
+
+  // Relations
+  assignments        StaffAssignment[]
+  assessmentsCreated Assessment[]
+  sessionsTaken      ClassSession[]    @relation("SessionTakenBy")
+  feedbacks          Feedback[]        @relation("FeedbackToStaff")
+
+  auditLogs AuditLog[] @relation("AuditOnStaff")
+}
+
+/**
+ * =========================
+ * Academic structure
+ * =========================
+ */
+model Department {
+  id       Int       @id @default(autoincrement())
+  code     String    @unique // e.g., "ME", "CSE", "EL"
+  name     String // e.g., "Mechanical", "Computer Science", "Electrical"
+  programs Program[]
+  staff    Staff[]
+}
+
+model Program {
+  id                Int        @id @default(autoincrement())
+  code              String     @unique // e.g., "ITI-FITTER", "ITI-CSE"
+  name              String
+  durationSemesters Int // ITI: use semesters or years (convert to semesters)
+  departmentId      Int
+  department        Department @relation(fields: [departmentId], references: [id])
+
+  sections Section[]
+  subjects Subject[]
+  students Student[]
+  results  Result[]
+}
+
+model Section {
+  id           Int     @id @default(autoincrement())
+  name         String // e.g., "A", "B", "Batch-2025-1"
+  academicYear String // e.g., "2025-2026"
+  semester     Int
+  shift        Shift? // MORNING/EVENING
+  programId    Int
+  program      Program @relation(fields: [programId], references: [id])
+
+  // Relations
+  enrollments Enrollment[]
+  assignments StaffAssignment[]
+  sessions    ClassSession[]
+  assessments Assessment[]
+  students    Student[] // if you keep current section directly on Student
+}
+
+enum Shift {
+  MORNING
+  EVENING
+}
+
+/**
+ * =========================
+ * Subjects & teaching assignment
+ * =========================
+ */
+model Subject {
+  id             Int    @id @default(autoincrement())
+  code           String @unique
+  name           String
+  semester       Int
+  theoryHours    Int?
+  practicalHours Int?
+
+  programId Int
+  program   Program @relation(fields: [programId], references: [id])
+
+  assignments StaffAssignment[]
+  sessions    ClassSession[]
+  attendance  Attendance[]
+  assessments Assessment[]
+  feedbacks   Feedback[]
+}
+
+model StaffAssignment {
+  id      Int   @id @default(autoincrement())
+  staffId Int
+  staff   Staff @relation(fields: [staffId], references: [id])
+
+  subjectId Int
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  sectionId Int
+  section   Section @relation(fields: [sectionId], references: [id])
+
+  termId Int
+  term   AcademicTerm @relation(fields: [termId], references: [id])
+
+  sessions ClassSession[]
+
+  active Boolean @default(true)
+
+  @@unique([staffId, subjectId, sectionId, termId], name: "uniq_assignment")
+}
+
+model AcademicTerm {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique // e.g., "Odd-2025", "Even-2026"
+  startDate DateTime
+  endDate   DateTime
+
+  assignments StaffAssignment[]
+  enrollments Enrollment[]
+  sessions    ClassSession[]
+  assessments Assessment[]
+  feedbacks   Feedback[]
+  results     Result[]
+}
+
+/**
+ * =========================
+ * Enrollment (history-friendly)
+ * =========================
+ */
+model Enrollment {
+  id        Int     @id @default(autoincrement())
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id])
+
+  sectionId Int
+  section   Section @relation(fields: [sectionId], references: [id])
+
+  termId Int
+  term   AcademicTerm @relation(fields: [termId], references: [id])
+
+  status EnrollmentStatus @default(ACTIVE)
+
+  @@unique([studentId, sectionId, termId], name: "uniq_student_section_term")
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  TRANSFERRED
+  COMPLETED
+  DROPPED
+}
+
+/**
+ * =========================
+ * Class sessions & attendance
+ * =========================
+ */
+model ClassSession {
+  id        Int     @id @default(autoincrement())
+  sectionId Int
+  section   Section @relation(fields: [sectionId], references: [id])
+
+  subjectId Int
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  takenByStaffId Int
+  takenBy        Staff @relation("SessionTakenBy", fields: [takenByStaffId], references: [id])
+
+  termId Int
+  term   AcademicTerm @relation(fields: [termId], references: [id])
+
+  scheduledAt DateTime
+  durationMin Int?
+  room        String?
+
+  assignmentId Int?
+  assignment   StaffAssignment? @relation(fields: [assignmentId], references: [id])
+
+  attendance Attendance[]
+
+  @@unique([sectionId, subjectId, scheduledAt], name: "uniq_session_time")
+}
+
+model Attendance {
+  id        Int          @id @default(autoincrement())
+  sessionId Int
+  session   ClassSession @relation(fields: [sessionId], references: [id])
+
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id])
+
+  subjectId Int
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  status   AttendanceStatus
+  markedAt DateTime         @default(now())
+
+  @@unique([sessionId, studentId], name: "uniq_session_student")
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+/**
+ * =========================
+ * Assessment & marks
+ * =========================
+ */
+model Assessment {
+  id        Int      @id @default(autoincrement())
+  name      String // IA1 / Midterm / Practical Test
+  date      DateTime
+  maxMarks  Int
+  weightage Float? // optional for % calc
+
+  sectionId Int
+  section   Section @relation(fields: [sectionId], references: [id])
+
+  subjectId Int
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  termId Int
+  term   AcademicTerm @relation(fields: [termId], references: [id])
+
+  createdById Int
+  createdBy   Staff @relation(fields: [createdById], references: [id])
+
+  marks Mark[]
+
+  @@index([sectionId, subjectId, termId])
+}
+
+model Mark {
+  id           Int        @id @default(autoincrement())
+  assessmentId Int
+  assessment   Assessment @relation(fields: [assessmentId], references: [id])
+
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id])
+
+  marksObtained Int
+
+  @@unique([assessmentId, studentId], name: "uniq_assessment_student")
+}
+
+/**
+ * =========================
+ * Result (final per term)
+ * =========================
+ */
+model Result {
+  id        Int     @id @default(autoincrement())
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id])
+
+  termId Int
+  term   AcademicTerm @relation(fields: [termId], references: [id])
+
+  programId Int
+  program   Program @relation(fields: [programId], references: [id])
+
+  totalMarks  Int
+  maxMarks    Int
+  percentage  Float
+  grade       String? // optional grade bucket
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  breakdown Json? // optional { subjectCode: { obtained, max } }
+
+  @@unique([studentId, termId], name: "uniq_student_term_result")
+}
+
+/**
+ * =========================
+ * Feedback (student -> teacher)
+ * =========================
+ */
+model Feedback {
+  id        Int     @id @default(autoincrement())
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id])
+
+  staffId Int
+  staff   Staff @relation("FeedbackToStaff", fields: [staffId], references: [id])
+
+  subjectId Int
+  subject   Subject @relation(fields: [subjectId], references: [id])
+
+  termId Int
+  term   AcademicTerm @relation(fields: [termId], references: [id])
+
+  rating    Int
+  comments  String?
+  createdAt DateTime @default(now())
+
+  @@unique([studentId, staffId, subjectId, termId], name: "uniq_feedback_scope")
+}
+
+/**
+ * =========================
+ * Messaging / notifications
+ * =========================
+ */
+model MessageLog {
+  id        Int     @id @default(autoincrement())
+  studentId Int
+  student   Student @relation(fields: [studentId], references: [id])
+
+  messageType MessageType
+  channel     MessageChannel
+  payload     Json?
+  status      MessageStatus  @default(PENDING)
+  providerId  String? // Twilio SID / Email id
+  sentAt      DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([studentId, messageType, createdAt])
+}
+
+enum MessageType {
+  ABSENCE_ALERT
+  MARKS_ALERT
+  GENERAL
+}
+
+enum MessageChannel {
+  SMS
+  EMAIL
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+/**
+ * =========================
+ * Help / support & password reset
+ * =========================
+ */
+model HelpRequest {
+  id          Int           @id @default(autoincrement())
+  title       String
+  description String
+  status      RequestStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+}
+
+enum RequestStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// ... (Your existing schema)
+
+/**
+ * =========================
+ * Official Calendar (Holidays)
+ * =========================
+ */
+model Holiday {
+  id        Int      @id @default(autoincrement())
+  name      String
+  date      DateTime @unique
+  createdAt DateTime @default(now())
+}
+
+/**
+ * =========================
+ * Audit / logs
+ * =========================
+ */
+model AuditLog {
+  id      Int    @id @default(autoincrement())
+  action  String
+  actorId Int? // nullable for system jobs
+  actor   User?  @relation("AuditByUser", fields: [actorId], references: [id])
+
+  staffId Int?
+  staff   Staff? @relation("AuditOnStaff", fields: [staffId], references: [id])
+
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([actorId, createdAt])
+}
+
+/**
+ * =========================
+ * Enums
+ * =========================
+ */
+enum Role {
+  STUDENT
+  STAFF
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Category {
+  GEN
+  OBC
+  SC
+  ST
+}

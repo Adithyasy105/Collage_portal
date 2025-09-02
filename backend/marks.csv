@@ -1,0 +1,4 @@
+rollNumber,marksObtained
+CS2023001,24
+CS2025001,45
+temp-4,40  // This is an invalid mark to test your error handling
