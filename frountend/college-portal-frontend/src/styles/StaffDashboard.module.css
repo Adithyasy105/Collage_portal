@@ -1,0 +1,804 @@
+/* Color Palette & Fonts */
+:root {
+  --primary-color: #0d47a1;
+  --primary-dark: #002e73;
+  --secondary-color: #4db6ac;
+  --secondary-dark: #37867e;
+  --bg-light: #f5f7fa;
+  --card-bg: #ffffff;
+  --text-color: #263238;
+  --text-light: #78909c;
+  --border-color: #e0e0e0;
+  --error-color: #f44336;
+  --success-color: #4caf50;
+  --transition-speed: 0.3s;
+}
+
+/* Global & Base Layout */
+body {
+    background-color: var(--bg-light);
+    min-height: 100vh;
+}
+
+.dashboardLayout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  min-height: 100vh;
+  transition: grid-template-columns var(--transition-speed);
+}
+
+.mainContent {
+  padding: 2rem;
+}
+
+.profileHeader {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.profileInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profilePhoto {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+}
+
+.profileName {
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: block;
+}
+
+.profileRollNumber {
+  color: var(--text-light);
+  font-size: 0.9rem;
+}
+
+.logoutBtn {
+  background-color: var(--error-color);
+  color: var(--color-white);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+}
+
+.logoutBtn:hover {
+  background-color: #b03636;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.viewTitle {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.formContainer {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card {
+  background-color: var(--bg-light);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform var(--transition-speed);
+  text-align: center;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.attendanceGrid, .marksGrid, .feedbackGrid, .marksSection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.attendancePercent {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 0.5rem;
+}
+
+.attendanceDetails {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.marksPercent {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+}
+
+/* Profile View Container */
+.profileViewContainer {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  max-width: 900px;
+  margin: 2rem auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profilePhotoSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.profilePhotoLarge {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+/* Title */
+.viewTitle {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+  text-align: center;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+/* Profile Details Layout */
+.profileDetails {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.profileDetailsCard {
+  background-color: var(--card-bg);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-color);
+  transition: transform var(--transition-speed);
+}
+
+.profileDetailsCard:hover {
+  transform: translateY(-5px);
+}
+
+.profileDetailsCard h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.profileDetailsCard p {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.profileDetailsCard p strong {
+  color: var(--primary-color);
+  margin-right: 0.5rem;
+}
+
+/* Feedback View */
+.feedbackCard {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.feedbackTeacher {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.feedbackTeacher h4 {
+    color: var(--primary-color);
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.feedbackTeacher p {
+    color: var(--text-light);
+    margin: 0;
+}
+
+.ratingSelect {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+}
+
+.ratingSelect select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.commentsGroup {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    gap: 0.5rem;
+}
+
+.commentsGroup textarea {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.feedbackSubmitted {
+    text-align: center;
+    font-weight: 600;
+    color: var(--success-color);
+    margin-top: 1rem;
+}
+
+/* Forms */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.formGroup {
+    text-align: left;
+}
+
+.formGroup label {
+    font-weight: 600;
+    color: var(--text-color);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form input, .form select, .form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.form button {
+    background-color: var(--primary-color);
+    color: var(--color-white);
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color var(--transition-speed);
+}
+
+.form button:hover {
+    background-color: var(--primary-dark);
+}
+
+.success, .error {
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.success {
+    background-color: #d4edda;
+    color: var(--success-color);
+}
+
+.error {
+    background-color: #f8d7da;
+    color: var(--error-color);
+}
+
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .dashboardLayout {
+    grid-template-columns: 1fr;
+  }
+  
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 1rem 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+    z-index: 500;
+  }
+  
+  .sidebarLogo {
+    display: none;
+  }
+  
+  .profileHeader {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0;
+  }
+  
+  .profileName {
+    font-size: 1rem;
+  }
+  
+  .profileRollNumber {
+    font-size: 0.8rem;
+  }
+  
+  .sidebarNav {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+    gap: 0;
+  }
+  
+  .navItem {
+    flex-direction: column;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    gap: 0.5rem;
+    width: 20%;
+  }
+  
+  .mainContent {
+    padding: 1rem;
+    padding-bottom: 6rem; /* Make space for mobile nav */
+  }
+  
+  .contentArea {
+    padding: 1rem;
+  }
+  
+  .profileDetails, .attendanceGrid, .marksGrid, .feedbackGrid, .marksSection {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+} 
+/* ... (your existing CSS for colors, etc.) ... */
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .dashboardLayout {
+    grid-template-columns: 1fr;
+  }
+  
+  /* Sidebar becomes a fixed bottom navigation bar */
+  .sidebar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 1rem 0;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+    z-index: 500;
+  }
+  
+  /* Hide the desktop header and logo on mobile */
+  .sidebarHeader {
+    display: none;
+  }
+
+  .sidebarNav {
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-around;
+    gap: 0;
+  }
+  
+  .navItem {
+    flex-direction: column;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    gap: 0.5rem;
+    width: 20%;
+  }
+
+  /* Adjust main content padding to make space for the bottom nav */
+  .mainContent {
+    padding: 1rem;
+    padding-bottom: 6rem;
+  }
+}
+/* Feedback View Layout */
+.feedbackContainer {
+  padding: 1rem;
+}
+
+.feedbackList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.feedbackCard {
+  background-color: var(--card-bg);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.feedbackCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* Header & Date */
+.feedbackHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.feedbackHeader h4 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+.feedbackDate {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+
+/* Individual Feedback Details */
+.feedbackDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.feedbackDetails p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.feedbackDetails p strong {
+  color: var(--primary-dark);
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.rating {
+  font-weight: 700;
+  color: var(--secondary-color);
+}
+
+.feedbackDetails p:last-child {
+  font-style: italic;
+  color: var(--text-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .feedbackList {
+    grid-template-columns: 1fr;
+  }
+
+  .feedbackCard {
+    padding: 1rem;
+  }
+}
+
+/* Primary Button */
+.submitBtn {
+  background: var(--primary-color, #2563eb);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.submitBtn:hover {
+  background: #1e40af;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.submitBtn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Secondary Button */
+.secondaryBtn {
+  background: #e5e7eb;
+  color: #374151;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.secondaryBtn:hover {
+  background: #d1d5db;
+}
+
+/* Dashboard Loading Spinner */
+.dashboardLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+}
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid var(--primary-color, #2563eb);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+
+/* Attendance Table */
+.attendanceTableWrapper {
+  overflow-x: auto;
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.attendanceTable {
+  width: 100%;
+  min-width: 500px;
+  border-collapse: collapse;
+  background: var(--card-bg);
+  table-layout: fixed; /* <-- This is the fix for alignment */
+}
+
+.attendanceTable th, .attendanceTable td {
+  padding: 0.75rem 1rem;
+  text-align: left; /* <-- Corrected to align left */
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.95rem;
+  vertical-align: middle; /* <-- This is the fix for vertical alignment */
+}
+
+.attendanceTable th {
+  background: var(--primary-color);
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.attendanceTable td {
+  color: var(--text-color);
+}
+
+.attendanceTable tr:hover {
+  background-color: var(--bg-light);
+  transition: background-color 0.2s;
+}
+
+.studentCell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.studentPhotoSmall {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-color);
+}
+
+.attendanceRadio {
+  accent-color: var(--secondary-color);
+  transform: scale(1.2);
+  cursor: pointer;
+}
+
+.submitWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.loadingSpinner {
+  border: 4px solid var(--border-color);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.active {
+  color: #fff;
+  background-color: var(--primary-color);
+}
+
+.toggleButtonGroup {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.toggleButton {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-light);
+  color: var(--text-color);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition-speed);
+}
+
+.toggleButton:hover {
+  background-color: var(--border-color);
+}
+
+.toggleButton.active {
+  background-color: var(--primary-color);
+  color: var(--color-white);
+  border-color: var(--primary-color);
+}
+
+.absent {
+  background-color: #fcebeb;
+  transition: background-color 0.2s;
+}
+
+.absent:hover {
+  background-color: #f8d7da;
+}
+
+/* CSV Upload */
+.csvUploadBox {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.csvUploadBox input[type="file"] {
+  border: 1px solid #d1d5db;
+  padding: 0.4rem;
+  border-radius: 6px;
+}
+
+
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.card h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 12px;
+}
+
+.formSelect {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9fafc;
+  color: #333;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+/* When user focuses */
+.formSelect:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+  background-color: #ffffff;
+}
+
+/* Option styles */
+.formSelect option {
+  padding: 10px;
+  font-size: 15px;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .card {
+    padding: 16px;
+  }
+
+  .card h4 {
+    font-size: 1rem;
+  }
+
+  .formSelect {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+}

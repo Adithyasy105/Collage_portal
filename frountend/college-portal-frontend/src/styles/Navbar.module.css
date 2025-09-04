@@ -19,10 +19,13 @@
   top: 0;
   left: 0;
   right: 0;
-  background-color: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(100px);
   z-index: 1000;
+  transition: all var(--transition-speed, 0.3s) ease-in-out;
+
 }
 
 .container {
@@ -51,17 +54,15 @@
 .nav {
   display: flex;
   gap: 1.5rem;
+  flex: 1;
+  justify-content: center;
 }
 
 .navLink {
-  background: none;
-  border: none;
   color: var(--color-text-light);
   font-weight: 600;
-  font-size: 1rem;
-  padding: 0.25rem 0;
-  cursor: pointer;
   position: relative;
+  padding: 0.25rem 0;
   transition: color var(--transition-speed);
 }
 
@@ -104,7 +105,7 @@
 }
 
 .navbarToggle {
-  display: none; /* Hidden on desktop */
+  display: none;
   flex-direction: column;
   justify-content: space-around;
   width: 30px;
@@ -121,17 +122,42 @@
   height: 3px;
   background: var(--color-primary);
   border-radius: 10px;
-  transition: var(--transition);
+  transition: transform var(--transition-speed);
 }
 
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
-  .navbarToggle {
-    display: flex; /* Show on mobile */
-    align-self: flex-start;
+  .header {
+    height: auto;
+    padding: 0.5rem 0;
   }
   
+  .header > .container {
+    flex-direction: row;
+    height: 60px;
+    padding: 0 1rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .loginBtn {
+    width: 90%;
+    margin: 1rem auto;
+  }
+  
+  /* Mobile Navbar Specifics */
+  .navbarToggle {
+    display: flex;
+    order: 1; /* Pushes the hamburger to the left */
+  }
+
   .navbarBrand {
+    order: 2; /* Centers the brand */
     flex-grow: 1;
     text-align: center;
   }

@@ -7,6 +7,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import ProfileFormView from './components/Dashboard/ProfileFormView';
+import SProfileFormView from "./components/StaffDashboard/ProfileFormView";
+import StaffDashboard from "./pages/StaffDashboard";
 import "./styles.css";
 
 const ProtectedRoute = ({ children }) => {
@@ -29,10 +31,22 @@ function App() {
           <ProfileFormView />
         </ProtectedRoute>
       } />
+      <Route path="/staff-profile-form" element={
+        <ProtectedRoute>
+          <SProfileFormView/>
+        </ProtectedRoute>
+      } />
       
       <Route path="/dashboard" element={
-        <ProtectedRoute>
+        <ProtectedRoute role="student">
           <Dashboard />
+        </ProtectedRoute>
+      } />
+
+      {/* Staff Protected route */}
+      <Route path="/staff-dashboard" element={
+        <ProtectedRoute role="staff">
+          <StaffDashboard />
         </ProtectedRoute>
       } />
       

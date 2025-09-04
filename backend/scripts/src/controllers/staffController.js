@@ -82,7 +82,10 @@ export const getMyProfile = async (req, res) => {
     const userId = req.user.id;
     const staff = await prisma.staff.findUnique({
       where: { userId },
-      include: { department: true },
+      include: { 
+        department: true,
+        user: { select: { id: true, name: true, email: true } }  // 👈 include user
+      },
     });
     if (!staff) return res.status(404).json({ message: "Staff profile not found" });
     res.json(staff);

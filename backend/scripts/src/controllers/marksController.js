@@ -8,26 +8,26 @@ const prisma = new PrismaClient();
  * Body: { name, date, maxMarks, weightage, sectionId, subjectId, termId }
  * Auth: staff
  */
+
+/**
+ * Staff creates an assessment
+ * Body: { name, date, maxMarks, weightage, sectionId, subjectId, termId }
+ * Auth: staff
+ */
 export const createAssessment = async (req, res) => {
   try {
     const { name, date, maxMarks, weightage, sectionId, subjectId, termId } = req.body;
     const userId = req.user.id;
-    const staff = await prisma.staff.findUnique({ where: { userId } });
-    if (!staff) {
-      return res.status(403).json({ message: "Staff profile required." });
-    }
 
+    const staff = await prisma.staff.findUnique({ where: { userId } });
+    if (!staff) return res.status(403).json({ message: "Staff profile required." });
+
+    // Check if staff is assigned to this section/subject/term
     const assigned = await prisma.staffAssignment.findFirst({
-      where: {
-        staffId: staff.id,
-        sectionId,
-        subjectId,
-        termId,
-      },
+      where: { staffId: staff.id, sectionId, subjectId, termId },
     });
-    if (!assigned) {
-      return res.status(403).json({ message: "Not authorized to create an assessment for this section/subject/term." });
-    }
+    if (!assigned)
+      return res.status(403).json({ message: "Not authorized to create assessment for this section/subject/term." });
 
     const assessment = await prisma.assessment.create({
       data: {
@@ -50,69 +50,72 @@ export const createAssessment = async (req, res) => {
 };
 
 /**
- * Staff uploads or updates marks for an assessment
- * Body: { assessmentId, marks: [{ studentId, marksObtained }] }
- * Auth: staff
+ * Get staff's assigned sections/subjects/terms
  */
-export const uploadMarks = async (req, res) => {
+export const getStaffAssignments = async (req, res) => {
   try {
-    const staffUserId = req.user.id;
-    const staff = await prisma.staff.findUnique({ where: { userId: staffUserId } });
-    if (!staff) {
-      return res.status(403).json({ message: "Staff profile required." });
-    }
+    const staff = await prisma.staff.findUnique({ where: { userId: req.user.id } });
+    if (!staff) return res.status(403).json({ message: "Staff profile required." });
 
-    const { assessmentId, marks } = req.body;
-    if (!Array.isArray(marks) || marks.length === 0) {
-      return res.status(400).json({ message: "Marks array is required and must not be empty." });
-    }
-
-    const assessment = await prisma.assessment.findUnique({
-      where: { id: assessmentId },
+    const assignments = await prisma.staffAssignment.findMany({
+      where: { staffId: staff.id },
       include: {
-        section: {
-          include: {
-            enrollments: {
-              where: { status: "ACTIVE" },
-              select: { studentId: true },
-            },
-          },
-        },
+        section: true,
+        subject: true,
+        term: true,
       },
     });
 
-    if (!assessment) {
-      return res.status(404).json({ message: "Assessment not found." });
-    }
-    if (assessment.createdById !== staff.id) {
-      return res.status(403).json({ message: "You are not authorized to upload marks for this assessment." });
-    }
+    res.json(assignments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error.", error: err.message });
+  }
+};
 
-    const validStudentIds = assessment.section.enrollments.map(e => e.studentId);
-    
+
+/**
+ * Staff uploads marks manually
+ */
+export const uploadMarks = async (req, res) => {
+  try {
+    const { assessmentId, marks } = req.body;
+    const staffUserId = req.user.id;
+
+    const staff = await prisma.staff.findUnique({ where: { userId: staffUserId } });
+    if (!staff) return res.status(403).json({ message: "Staff profile required." });
+
+    if (!Array.isArray(marks) || marks.length === 0)
+      return res.status(400).json({ message: "Marks array is required." });
+
+    const assessment = await prisma.assessment.findUnique({
+      where: { id: assessmentId },
+      include: { section: { include: { students: true } } },
+    });
+    if (!assessment) return res.status(404).json({ message: "Assessment not found." });
+    if (assessment.createdById !== staff.id)
+      return res.status(403).json({ message: "You are not authorized to upload marks." });
+
+    const validStudentIds = assessment.section.students.map((s) => s.id);
+
+    // Validate marks
     for (const entry of marks) {
-      if (!validStudentIds.includes(entry.studentId)) {
-        return res.status(400).json({ message: `Invalid studentId: ${entry.studentId}. Student is not enrolled in the correct section.` });
-      }
-      if (typeof entry.marksObtained !== 'number' || entry.marksObtained < 0 || entry.marksObtained > assessment.maxMarks) {
-        return res.status(400).json({ message: `Invalid marksObtained for student ${entry.studentId}. Must be a number between 0 and ${assessment.maxMarks}.` });
-      }
+      if (!validStudentIds.includes(entry.studentId))
+        return res.status(400).json({ message: `Invalid studentId: ${entry.studentId}` });
+      if (typeof entry.marksObtained !== "number" || entry.marksObtained < 0 || entry.marksObtained > assessment.maxMarks)
+        return res.status(400).json({ message: `Invalid marks for student ${entry.studentId}` });
     }
 
-    const markOps = marks.map(entry =>
+    const markOps = marks.map((entry) =>
       prisma.mark.upsert({
         where: { uniq_assessment_student: { assessmentId, studentId: entry.studentId } },
         update: { marksObtained: entry.marksObtained },
-        create: {
-          assessmentId: assessmentId,
-          studentId: entry.studentId,
-          marksObtained: entry.marksObtained,
-        },
+        create: { assessmentId, studentId: entry.studentId, marksObtained: entry.marksObtained },
       })
     );
 
     const results = await prisma.$transaction(markOps);
-    res.status(201).json({ message: "Marks uploaded successfully.", count: results.length, records: results });
+    res.status(201).json({ message: "Marks uploaded successfully.", count: results.length });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error.", error: err.message });
@@ -120,92 +123,118 @@ export const uploadMarks = async (req, res) => {
 };
 
 /**
- * Staff uploads marks for an assessment via a CSV file.
- * POST /api/marks/upload-csv
+ * Staff uploads marks via CSV
  */
 export const uploadMarksCsv = async (req, res) => {
-    if (!req.file || !req.file.buffer) {
-        return res.status(400).json({ message: "CSV file is required." });
-    }
+  if (!req.file?.buffer) return res.status(400).json({ message: "CSV file is required." });
 
-    const { assessmentId } = req.body;
-    if (!assessmentId) {
-        return res.status(400).json({ message: "assessmentId is required in the form data." });
-    }
+  const { assessmentId } = req.body;
+  if (!assessmentId) return res.status(400).json({ message: "assessmentId is required." });
 
+  try {
     const staffUserId = req.user.id;
     const staff = await prisma.staff.findUnique({ where: { userId: staffUserId } });
-    if (!staff) {
-        return res.status(403).json({ message: "Staff profile required." });
-    }
+    if (!staff) return res.status(403).json({ message: "Staff profile required." });
 
     const assessment = await prisma.assessment.findUnique({
-        where: { id: parseInt(assessmentId) },
-        include: {
-            section: {
-                include: {
-                    students: {
-                        select: { id: true, rollNumber: true }
-                    }
-                }
-            }
-        }
+      where: { id: parseInt(assessmentId) },
+      include: { section: { include: { students: true } } },
     });
 
-    if (!assessment) {
-        return res.status(404).json({ message: "Assessment not found." });
-    }
-    if (assessment.createdById !== staff.id) {
-        return res.status(403).json({ message: "You are not authorized to upload marks for this assessment." });
-    }
+    if (!assessment) return res.status(404).json({ message: "Assessment not found." });
+    if (assessment.createdById !== staff.id)
+      return res.status(403).json({ message: "You are not authorized to upload marks." });
 
-    const validStudents = assessment.section.students;
-    const rollNumberToStudentIdMap = new Map(validStudents.map(s => [s.rollNumber, s.id]));
-
+    const rollToId = new Map(assessment.section.students.map((s) => [s.rollNumber, s.id]));
     const marksData = [];
+
     const stream = Readable.from(req.file.buffer.toString());
-
     stream
-        .pipe(csv())
-        .on('data', (data) => {
-            const studentId = rollNumberToStudentIdMap.get(data.rollNumber);
-            if (studentId && data.marksObtained !== undefined) {
-                const marksObtained = parseInt(data.marksObtained);
-                if (!isNaN(marksObtained) && marksObtained >= 0 && marksObtained <= assessment.maxMarks) {
-                    marksData.push({ studentId, marksObtained });
-                } else {
-                    console.warn(`Skipping invalid marks for roll number ${data.rollNumber}.`);
-                }
-            } else {
-                console.warn(`Skipping record with invalid roll number or marks: ${JSON.stringify(data)}`);
-            }
-        })
-        .on('end', async () => {
-            if (marksData.length === 0) {
-                return res.status(400).json({ message: "No valid marks found in the CSV file." });
-            }
+      .pipe(csv())
+      .on("data", (data) => {
+        const studentId = rollToId.get(data.rollNumber);
+        const marksObtained = parseInt(data.marksObtained);
+        if (studentId && !isNaN(marksObtained) && marksObtained >= 0 && marksObtained <= assessment.maxMarks) {
+          marksData.push({ studentId, marksObtained });
+        }
+      })
+      .on("end", async () => {
+        if (marksData.length === 0) return res.status(400).json({ message: "No valid marks found." });
 
-            const markOps = marksData.map(mark =>
-                prisma.mark.upsert({
-                    where: { uniq_assessment_student: { assessmentId: parseInt(assessmentId), studentId: mark.studentId } },
-                    update: { marksObtained: mark.marksObtained },
-                    create: {
-                        assessmentId: parseInt(assessmentId),
-                        studentId: mark.studentId,
-                        marksObtained: mark.marksObtained,
-                    },
-                })
-            );
+        const markOps = marksData.map((m) =>
+          prisma.mark.upsert({
+            where: { uniq_assessment_student: { assessmentId: parseInt(assessmentId), studentId: m.studentId } },
+            update: { marksObtained: m.marksObtained },
+            create: { assessmentId: parseInt(assessmentId), studentId: m.studentId, marksObtained: m.marksObtained },
+          })
+        );
 
-            try {
-                await prisma.$transaction(markOps);
-                res.status(201).json({ message: `Successfully uploaded ${marksData.length} marks from CSV.` });
-            } catch (err) {
-                console.error(err);
-                res.status(500).json({ message: "Server error during transaction.", error: err.message });
-            }
-        });
+        await prisma.$transaction(markOps);
+        res.status(201).json({ message: `Uploaded ${marksData.length} marks successfully.` });
+      });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error.", error: err.message });
+  }
 };
+
+/**
+ * Staff fetches their assessments
+ */
+export const getMyAssessments = async (req, res) => {
+  try {
+    const staff = await prisma.staff.findUnique({ where: { userId: req.user.id } });
+    if (!staff) return res.status(403).json({ message: "Staff profile required." });
+
+    const assessments = await prisma.assessment.findMany({
+      where: { createdById: staff.id },
+      include: { section: true, subject: true, term: true },
+      orderBy: { date: "desc" },
+    });
+
+    res.json(assessments);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error.", error: err.message });
+  }
+};
+
+/**
+ * Get students + marks for a given assessment
+ */
+export const getAssessmentMarks = async (req, res) => {
+  try {
+    const { assessmentId } = req.params;
+    const staff = await prisma.staff.findUnique({ where: { userId: req.user.id } });
+    if (!staff) return res.status(403).json({ message: "Staff profile required." });
+
+    const assessment = await prisma.assessment.findUnique({
+      where: { id: parseInt(assessmentId) },
+      include: { section: { include: { students: { include: { user: true } } } }, marks: true, subject: true },
+    });
+
+    if (!assessment) return res.status(404).json({ message: "Assessment not found." });
+    if (assessment.createdById !== staff.id)
+      return res.status(403).json({ message: "Not authorized." });
+
+    const students = assessment.section.students.map((s) => ({
+      studentId: s.id,
+      rollNumber: s.rollNumber,
+      name: s.user?.name,
+      photoUrl: s.photoUrl,
+      marksObtained: assessment.marks.find((m) => m.studentId === s.id)?.marksObtained || null,
+    }));
+
+    res.json({
+      assessment: { id: assessment.id, name: assessment.name, maxMarks: assessment.maxMarks, subject: assessment.subject.name },
+      students,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error.", error: err.message });
+  }
+};
+
 
 /**
  * Student views their marks
@@ -261,3 +290,8 @@ export const viewMyMarks = async (req, res) => {
     res.status(500).json({ message: "Server error.", error: err.message });
   }
 };
+
+/**
+ * Staff gets all assessments they created
+ * Auth: staff
+ */

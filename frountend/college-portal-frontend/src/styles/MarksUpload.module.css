@@ -1,0 +1,224 @@
+/* Color Palette & Fonts */
+:root {
+  --primary-color: #0d47a1;
+  --primary-dark: #002e73;
+  --secondary-color: #4db6ac;
+  --secondary-dark: #37867e;
+  --bg-light: #f5f7fa;
+  --card-bg: #ffffff;
+  --text-color: #263238;
+  --text-light: #78909c;
+  --border-color: #e0e0e0;
+  --error-color: #f44336;
+  --success-color: #4caf50;
+  --transition-speed: 0.3s;
+}
+
+/* Container */
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+}
+
+/* Headings */
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+h3 {
+  margin-bottom: 15px;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+/* Card Style */
+.card {
+  background: #fff;
+  padding: 25px;
+  margin-bottom: 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.12);
+}
+
+/* Form Elements */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+input:focus,
+select:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Form Group Flex */
+.formGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.formGroup input,
+.formGroup select {
+  flex: 1 1 250px;
+}
+
+/* Submit Buttons */
+.submitBtn {
+  margin-top: 15px;
+  background: #007bff;
+  color: #fff;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.submitBtn:hover {
+  background: #0056b3;
+}
+
+/* Toggle Buttons */
+.toggleBtns {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.toggleBtns button {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 10px;
+  border: 1px solid #007bff;
+  background: #f1f5f9;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+
+.toggleBtns .activeBtn {
+  background: #007bff;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Messages */
+.message {
+  text-align: center;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Table Styles */
+.tableContainer {
+  overflow-x: auto;
+  margin-top: 15px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.table th,
+.table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #e0e0e0;
+  text-align: left;
+}
+
+.table th {
+  background: #f7f9fc;
+  font-weight: 600;
+}
+
+.photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* File Input for CSV */
+.form input[type="file"] {
+  padding: 6px 10px;
+  font-size: 0.95rem;
+}
+
+/* Responsive for Mobile */
+@media screen and (max-width: 768px) {
+
+  /* Stack form groups */
+  .formGroup {
+    flex-direction: column;
+  }
+
+  .formGroup input,
+  .formGroup select {
+    flex: 1 1 100%;
+  }
+
+  /* Toggle buttons small */
+  .toggleBtns button {
+    font-size: 0.9rem;
+    padding: 8px 0;
+  }
+
+  /* Table smaller padding */
+  .table th,
+  .table td {
+    padding: 8px 6px;
+  }
+
+  /* Headings smaller on mobile */
+  h2 {
+    font-size: 1.6rem;
+  }
+  h3 {
+    font-size: 1.3rem;
+  }
+
+  .submitBtn {
+    padding: 10px 14px;
+    font-size: 0.95rem;
+  }
+}

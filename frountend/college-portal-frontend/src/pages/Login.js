@@ -1,7 +1,6 @@
-// src/pages/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginApi, getMe } from '../api/authApi'; // <-- Import getMe
+import { loginApi, getMe } from '../api/authApi';
 import AuthForm from '../components/AuthForm';
 import styles from '../styles/Auth.module.css';
 
@@ -16,19 +15,28 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-     try {
+    try {
       const loginData = await loginApi(email, password);
       localStorage.setItem('token', loginData.token);
       
       const userData = await getMe();
       localStorage.setItem('user', JSON.stringify(userData.user));
-      
       if (userData.profileCompleted) {
+        if (userData.user.role === 'STUDENT') {
           navigate('/dashboard');
-      } else {
-          navigate('/profile-form');
-      }
-    } catch (err) {
+        } else if (userData.user.role === 'STAFF') {
+            navigate('/staff-dashboard');
+    } else if (userData.user.role === 'ADMIN') {
+        navigate('/admin-dashboard');
+    }
+    } else {
+    if (userData.user.role === 'STUDENT') {
+        navigate('/profile-form');
+    } else if (userData.user.role === 'STAFF') {
+        navigate('/staff-profile-form');
+    }
+    }
+  } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);

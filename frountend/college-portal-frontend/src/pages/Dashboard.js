@@ -48,8 +48,13 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <div className={styles.loading}>Loading dashboard...</div>;
-  }
+  return (
+    <div className={styles.dashboardLoading}>
+      <div className={styles.spinner}></div>
+    </div>
+  );
+}
+
 
   if (error) {
     return <div className={styles.error}>{error}</div>;

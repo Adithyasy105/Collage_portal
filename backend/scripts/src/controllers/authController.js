@@ -101,6 +101,45 @@ export const resetPassword = async (req, res) => {
 // return basic auth info + profileCompleted flag and linked student/staff record ids
 // ... (your other imports)
 
+/*export const me = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true, email: true, name: true, role: true,
+        student: { select: { 
+          id: true, rollNumber: true, programId: true, dob: true, gender: true,
+          category: true, address: true, city: true, state: true, pincode: true,
+          guardianName: true, guardianPhone: true, guardianEmail: true 
+        }},
+        staff: { select: { id: true, employeeId: true, departmentId: true } },
+      },
+    });
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    let profileCompleted = false;
+    if (user.role === "STUDENT" && user.student) {
+        const student = user.student;
+        if (student.rollNumber && student.programId && student.guardianEmail) {
+            profileCompleted = true;
+        }
+    } else if (user.role === "STAFF" && user.staff) {
+        if (user.staff.employeeId && user.staff.departmentId) {
+            profileCompleted = true;
+        }
+    } else if (user.role === "ADMIN") {
+        profileCompleted = true;
+    }
+
+    // CORRECTED: Remove the redundant 'role' field from the response
+    res.json({ user, profileCompleted });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};*/
 export const me = async (req, res) => {
   try {
     const { id } = req.user;
@@ -114,22 +153,27 @@ export const me = async (req, res) => {
           category: true, address: true, city: true, state: true, pincode: true,
           guardianName: true, guardianPhone: true, guardianEmail: true 
         }},
-        staff: { select: { id: true, employeeId: true, departmentId: true } },
+        staff: { select: { 
+          id: true, employeeId: true, departmentId: true, 
+          designation: true, phone: true, qualification: true 
+        }},
+        // The above fields are from the Staff model, which we've designed.
+        // It should match the form fields.
       },
     });
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // CORRECTED: Simplified and more robust profile completion check
     let profileCompleted = false;
     if (user.role === "STUDENT" && user.student) {
-        // A profile is considered complete if all these key fields are not null
         const student = user.student;
-        if (student.rollNumber && student.programId && student.guardianEmail) {
+        if (student.rollNumber && student.programId && student.guardianName && student.guardianEmail) {
             profileCompleted = true;
         }
     } else if (user.role === "STAFF" && user.staff) {
-        if (user.staff.employeeId && user.staff.departmentId) {
+        const staff = user.staff;
+        // CORRECTED: Check for all required fields
+        if (staff.employeeId && staff.departmentId && staff.designation && staff.qualification) {
             profileCompleted = true;
         }
     } else if (user.role === "ADMIN") {

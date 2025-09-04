@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "../styles/Home.module.css";
-import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 // Data can be fetched from a backend API in a real-world scenario
 const leadershipData = [
@@ -46,7 +46,6 @@ const coursesData = [
 ];
 
 const Home = () => {
-  const navigate = useNavigate();
   const [contactForm, setContactForm] = useState({ name: "", email: "", message: "" });
   const [admissionForm, setAdmissionForm] = useState({ name: "", email: "", phone: "", course: "" });
 
@@ -62,9 +61,7 @@ const Home = () => {
     setAdmissionForm({ name: "", email: "", phone: "", course: "" });
   };
 
-  const handleLoginClick = () => {
-    navigate("/login");
-  };
+ 
 
   // The handleNavClick function is no longer needed
   // as smooth scrolling is handled by the browser and CSS.
@@ -91,19 +88,7 @@ const Home = () => {
   return (
     <main>
       <header className={styles.header}>
-        <div className={styles.container}>
-          <div className={styles.logo}>Umacahgi ITI, Hassan</div>
-          <nav className={styles.nav} aria-label="Main Navigation">
-            <a href="#about" className={styles.navLink}>About</a>
-            <a href="#leadership" className={styles.navLink}>Leadership</a>
-            <a href="#courses" className={styles.navLink}>Courses</a>
-            <a href="#admission" className={styles.navLink}>Admission</a>
-            <a href="#contact" className={styles.navLink}>Contact</a>
-          </nav>
-          <button className={styles.loginBtn} onClick={handleLoginClick} aria-label="Login">
-            Login
-          </button>
-        </div>
+        <Navbar />
       </header>
 
       {/* Hero Section */}
