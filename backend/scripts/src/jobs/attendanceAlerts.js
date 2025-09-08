@@ -194,7 +194,7 @@ export const sendDailyAttendanceAlerts = async () => {
  */
 export const startAttendanceAlertJob = () => {
   // Cron schedule: '0 18 * * *' runs every day at 6:10 PM
-  cron.schedule('19 19 * * *', () => {
+  cron.schedule('52 17 * * *', () => {
     sendDailyAttendanceAlerts();
   }, {
     timezone: "Asia/Kolkata" // Set to your desired timezone

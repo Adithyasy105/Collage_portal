@@ -493,6 +493,34 @@ model AuditLog {
   @@index([actorId, createdAt])
 }
 
+model AdmissionForm {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  course    String
+  status    FormStatus @default(PENDING) // pending, reviewed, resolved
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ContactForm {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  status    FormStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum FormStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+}
+
+
 /**
  * =========================
  * Enums

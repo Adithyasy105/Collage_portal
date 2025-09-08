@@ -13,6 +13,9 @@ import adminRoutes from "./scripts/src/routes/adminRoutes.js";
 import attendanceRoutes from "./scripts/src/routes/attendanceRoutes.js";
 import marksRoutes from "./scripts/src/routes/marksRoutes.js";
 
+import admissionRoutes from "./scripts/src/routes/admissionRoutes.js";
+import contactRoutes from "./scripts/src/routes/contactRoutes.js";
+
 import { startAttendanceAlertJob } from "./scripts/src/jobs/attendanceAlerts.js"; // <-- NEW
 
 const app = express();
@@ -34,6 +37,10 @@ app.use("/api/staff", staffRoutes);         // staff profile, create sessions, m
 app.use("/api/admin", adminRoutes);         // admin CSV upload, management
 app.use("/api/attendance", attendanceRoutes); // alternate attendance endpoints (optional)
 app.use("/api/marks", marksRoutes); // marks endpoints (if separate)
+
+// Routes
+app.use("/api/admissions", admissionRoutes);
+app.use("/api/contacts", contactRoutes);
 
 startAttendanceAlertJob()
 

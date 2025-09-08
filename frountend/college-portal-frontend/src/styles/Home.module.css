@@ -22,7 +22,9 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-bg-light);
+  background: linear-gradient(270deg, #004d9c, #f0a301, #2c3e50, #003387);
+  background-size: 800% 800%;
+  animation: gradientBlink 15s ease infinite;
   color: var(--color-text);
   line-height: 1.6;
   margin: 0;
@@ -32,6 +34,26 @@ body {
   min-height: 100vh;
 }
 
+/* 🌈 Smooth Blinking Gradient Animation */
+@keyframes gradientBlink {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
 a {
   text-decoration: none;
   color: var(--color-primary);
@@ -40,7 +62,7 @@ a {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 18px;
 }
 
 /* Header & Navigation */
@@ -159,58 +181,154 @@ h2 {
 }
 
 /* Hero Section */
+/* 🌟 Hero Section */
 .hero {
   position: relative;
-  height: 100vh;
-  min-height: 500px;
-  background-image: url("https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1470&q=80");
-  background-size: cover;
-  background-position: center;
+  width: 100%;
+  height: 100vh; /* Fullscreen hero */
   display: flex;
-  align-items: center;
   justify-content: center;
-  color: var(--color-white);
+  align-items: center;
   text-align: center;
-  padding: 0 1rem;
-  box-shadow: inset 0 0 0 1000px rgb(0 0 0 / 0.35);
+  overflow: hidden;
+  color: #fff;
 }
 
+/* 🎥 Background Video */
+.heroVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+
+/* 🌌 Dark + Gradient Overlay */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+      rgba(0, 0, 0, 0.6),
+      rgba(0, 0, 0, 0.4)
+    );
+  z-index: -1;
+  animation: fadeIn 2s ease-in-out;
+}
+
+/* ✨ Hero Content */
 .heroContent {
-  max-width: 700px;
+  position: relative;
+  max-width: 900px;
+  padding: 0 19px;
+  animation: fadeUp 1.5s ease-in-out;
+  text-align: center;
 }
 
 .hero h1 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
-  font-weight: 900;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 2px 8px rgb(0 0 0 / 0.6);
-  color: var(--color-white);
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  background: linear-gradient(90deg, #ffd60a, #ffb703, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 10px rgba(0,0,0,0.6);
+  animation: slideDown 1.2s ease-out;
 }
 
 .hero p {
-  font-size: clamp(1.125rem, 2vw, 1.5rem);
-  margin-bottom: 2rem;
-  text-shadow: 0 1px 4px rgb(0 0 0 / 0.6);
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+  color: #f1f5f9;
+  animation: fadeInUp 1.8s ease-out;
 }
 
+/* 🚀 Call to Action Button */
 .ctaBtn {
-  background-color: var(--color-secondary);
-  border: none;
-  color: var(--color-white);
+  display: inline-block;
+  background: linear-gradient(135deg, #ffd60a, #ff9e00);
+  color: #003566;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  font-size: 1.1rem;
   font-weight: 700;
-  font-size: 1.125rem;
-  padding: 0.75rem 2rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color var(--transition-speed), transform var(--transition-speed);
-  box-shadow: 0 4px 8px rgb(245 166 35 / 0.5);
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+  transition: all 0.35s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 🔥 Ripple effect */
+.ctaBtn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+  z-index: 0;
+}
+
+.ctaBtn:hover::after {
+  width: 300%;
+  height: 300%;
 }
 
 .ctaBtn:hover {
-  background-color: var(--color-secondary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgb(247 197 111 / 0.7);
+  background: linear-gradient(135deg, #ffe169, #ffb703);
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
 }
+
+/* 🎬 Keyframe Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+  0% { transform: translateY(40px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+  0% { transform: translateY(-40px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  0% { transform: translateY(30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* 📱 Mobile Optimisation */
+@media (max-width: 768px) {
+  .hero {
+    height: 80vh;
+  }
+  .hero h1 {
+    font-size: 2rem;
+  }
+  .hero p {
+    font-size: 1rem;
+  }
+  .ctaBtn {
+    padding: 0.9rem 1.8rem;
+    font-size: 1rem;
+  }
+}
+
 
 /* About & Vision/Mission */
 .about {
@@ -342,15 +460,14 @@ h2 {
 /* Forms Section */
 .form {
   max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 1.5rem auto;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   padding: 2rem;
-  background-color: var(--color-white);
+  background: linear-gradient(135deg, #ffffff, #f9f9f9);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
 .form label {
@@ -362,13 +479,12 @@ h2 {
 .form input,
 .form select,
 .form textarea {
-  padding: 0.5rem 0.75rem;
+  padding: 0.6rem 0.8rem;
   font-size: 1rem;
   border: 2px solid var(--color-primary-light);
-  border-radius: 6px;
-  transition: border-color var(--transition-speed);
+  border-radius: 8px;
+  transition: all 0.3s ease;
   font-family: var(--font-sans);
-  resize: vertical;
 }
 
 .form input:focus,
@@ -376,41 +492,61 @@ h2 {
 .form textarea:focus {
   outline: none;
   border-color: var(--color-secondary);
-  box-shadow: 0 0 6px var(--color-secondary-light);
+  box-shadow: 0 0 8px var(--color-secondary-light);
 }
 
 .submitBtn {
-  background-color: var(--color-primary);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
   color: var(--color-white);
   font-weight: 700;
-  padding: 0.75rem 1.5rem;
+  padding: 0.8rem 1.5rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 1.125rem;
-  transition: background-color var(--transition-speed), box-shadow var(--transition-speed);
+  font-size: 1.1rem;
+  transition: transform 0.2s, box-shadow 0.3s ease;
 }
 
 .submitBtn:hover {
-  background-color: var(--color-primary-dark);
-  box-shadow: 0 4px 12px rgb(0 74 173 / 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 74, 173, 0.5);
 }
 
-.successMsg, .errorMsg {
+/* Success & Error Messages */
+.successMsg,
+.errorMsg {
+  max-width: 500px;
+  margin: 1rem auto;
   padding: 1rem;
-  border-radius: 4px;
+  border-radius: 15px;
   text-align: center;
+  font-weight: 600;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .successMsg {
-  background-color: #d4edda;
+  background: #e6ffed;
+  border: 1px solid #28a745;
   color: #155724;
 }
 
 .errorMsg {
-  background-color: #f8d7da;
+  background: #ffe6e6;
+  border: 1px solid #dc3545;
   color: #721c24;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 /* Footer */
 .footer {
@@ -468,5 +604,35 @@ h2 {
   
   .leaderCard, .courseCard {
     padding: 1.5rem;
+  }
+}
+
+/* Map Section */
+.mapSection {
+  padding: 2rem 0;
+  background: var(--color-bg-light);
+  text-align: center;
+}
+
+.mapContainer {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Make iframe responsive */
+.mapContainer iframe {
+  width: 100%;
+  height: 400px;
+  border: none;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .mapContainer iframe {
+    height: 250px;
   }
 }
