@@ -1,7 +1,17 @@
 name,email,rollNumber,role,programId,sectionId,departmentId
-Ravi Sharma,ravi.sharma@example.com,CS2025001,STUDENT,1,1,
-Priya Kumar,priya.k@example.com,EE2025002,STUDENT,1,1,
-Anjali Desai,anjali.d@college.com,STAFF001,STAFF,,,1
-Dr. S. Ramesh,s.ramesh@college.com,STAFF002,STAFF,,,1
-sakshi,adithyasy68@gmail.com,CS2025003,STUDENT,1,1,
-admin.adithyasy15@gmail.com,ADMIN001,ADMIN,,,,
+Amit Kumar,amit.kumar@example.com,CS2025101,STUDENT,1,1,1
+Sneha Rao,sneha.rao@example.com,CS2025102,STUDENT,1,1,1
+Rahul Verma,rahul.verma@example.com,CS2025103,STUDENT,1,1,2
+Divya Sharma,divya.sharma@example.com,CS2025104,STUDENT,1,1,1
+Rohan Mehta,rohan.mehta@example.com,CS2025105,STUDENT,1,1,2
+Shreya Nair,shreya.nair@example.com,CS2025106,STUDENT,1,1,1
+Ankit Singh,ankit.singh@example.com,CS2025107,STUDENT,1,1,2
+Pallavi Joshi,pallavi.joshi@example.com,CS2025108,STUDENT,1,1,1
+Nikhil Reddy,nikhil.reddy@example.com,CS2025109,STUDENT,1,1,2
+Isha Kapoor,isha.kapoor@example.com,CS2025110,STUDENT,1,1,1
+Prof. Mahesh Iyer,mahesh.iyer@example.com,STAFF101,STAFF,,,1
+Dr. Kavya Menon,kavya.menon@example.com,STAFF102,STAFF,,,2
+Prof. Alok Tiwari,alok.tiwari@example.com,STAFF103,STAFF,,,1
+Dr. Sunita Rao,sunita.rao@example.com,STAFF104,STAFF,,,2
+Admin Primary,admin.primary@college.com,ADMIN100,ADMIN,,, 
+Admin Secondary,admin.secondary@college.com,ADMIN101,ADMIN,,, 
