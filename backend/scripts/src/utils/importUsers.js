@@ -26,7 +26,7 @@ export async function importUsers(csvInput, sendMails = true) {
         if (row.name && row.email && row.role && row.rollNumber) {
           const role = row.role.trim().toUpperCase();
 
-          if (["STUDENT", "STAFF"].includes(role)) {
+          if (["STUDENT", "STAFF", "ADMIN"].includes(role)) {
             const rawPassword = Math.random().toString(36).slice(-8);
 
             const userData = {
@@ -37,11 +37,14 @@ export async function importUsers(csvInput, sendMails = true) {
               rawPassword,
               programId: row.programId ? parseInt(row.programId) : null,
               sectionId: row.sectionId ? parseInt(row.sectionId) : null,
-              departmentId: row.departmentId ? parseInt(row.departmentId) : null,
+              departmentId: row.departmentId
+                ? parseInt(row.departmentId)
+                : null,
             };
 
             if (
-              (role === "STUDENT" && (!userData.programId || !userData.sectionId)) ||
+              (role === "STUDENT" &&
+                (!userData.programId || !userData.sectionId)) ||
               (role === "STAFF" && !userData.departmentId)
             ) {
               invalidRecords.push({
@@ -85,7 +88,9 @@ export async function importUsers(csvInput, sendMails = true) {
                 where: { email: user.email },
               });
               if (existingUser) {
-                console.warn(`⚠️ User with email ${user.email} already exists. Skipping...`);
+                console.warn(
+                  `⚠️ User with email ${user.email} already exists. Skipping...`
+                );
                 invalidRecords.push({ ...user, reason: "Duplicate email" });
                 continue;
               }
@@ -107,8 +112,13 @@ export async function importUsers(csvInput, sendMails = true) {
                 });
 
                 if (existingStudent) {
-                  console.warn(`⚠️ Student with rollNumber ${user.rollNumber} already exists. Skipping student record.`);
-                  invalidRecords.push({ ...user, reason: "Duplicate rollNumber" });
+                  console.warn(
+                    `⚠️ Student with rollNumber ${user.rollNumber} already exists. Skipping student record.`
+                  );
+                  invalidRecords.push({
+                    ...user,
+                    reason: "Duplicate rollNumber",
+                  });
                   continue;
                 }
 
@@ -129,6 +139,16 @@ export async function importUsers(csvInput, sendMails = true) {
                     employeeId: user.rollNumber,
                     departmentId: user.departmentId,
                     designation: "Teacher",
+                  },
+                });
+              } else if (role === "ADMIN") {
+                // just create user record
+                await tx.user.create({
+                  data: {
+                    name: user.name,
+                    email: user.email,
+                    role: "ADMIN",
+                    password: hashedPassword,
                   },
                 });
               }
@@ -155,7 +175,9 @@ export async function importUsers(csvInput, sendMails = true) {
                 await sendEmail(user.email, subject, htmlContent);
                 console.log(`✅ Email sent to ${user.email}`);
               } catch (mailErr) {
-                console.error(`❌ Failed to send email to ${user.email}: ${mailErr.message}`);
+                console.error(
+                  `❌ Failed to send email to ${user.email}: ${mailErr.message}`
+                );
               }
             }
           }

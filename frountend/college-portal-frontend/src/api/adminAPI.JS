@@ -103,7 +103,7 @@ export const exportFeedbackCsvApi = async (params = {}) =>
   (await axios.get(`${ADMIN_API_URL}/feedback/export`, {
     ...getHeaders(),
     params,
-    responseType: "blob", // important for CSV
+    responseType: "blob",
   })).data;
 
 export const getTeacherAverageRatingsApi = async () =>
@@ -112,4 +112,3 @@ export const getTeacherAverageRatingsApi = async () =>
 // -------------------- RESULTS --------------------
 export const generateResultsApi = async (termId) =>
   (await axios.post(`${ADMIN_API_URL}/generate-results`, { termId }, getHeaders())).data;
-    

@@ -1,4 +1,3 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,226 +7,392 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/**
- * =========================
- * Core auth / people
- * =========================
- */
+/// *
+///  * =========================
+///  * Core auth / people
+///  * =========================
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(STUDENT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // One-to-one links
-  student Student?
-  staff   Staff?
-
-  // Relations
+  id           Int                  @id @default(autoincrement())
+  name         String
+  email        String               @unique
+  password     String
+  role         Role                 @default(STUDENT)
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  auditLogs    AuditLog[]           @relation("AuditByUser")
   helpRequests HelpRequest[]
   resetTokens  PasswordResetToken[]
-
-  // Audit
-  auditLogs AuditLog[] @relation("AuditByUser")
+  staff        Staff?
+  student      Student?
 }
 
 model Student {
-  id              Int     @id @default(autoincrement())
-  rollNumber      String  @unique
+  id              Int          @id @default(autoincrement())
+  rollNumber      String       @unique
+  address         String?
   admissionYear   Int
+  category        Category?
+  city            String?
   currentSemester Int
-  photoUrl        String? // Supabase Storage URL
-
-  // NEW: profile + compliance
-  dob      DateTime?
-  gender   Gender?
-  category Category?
-  address  String?
-  city     String?
-  state    String?
-  pincode  String?
-
-  guardianName  String?
-  guardianPhone String?
-  guardianEmail String?
-
-  // Foreign keys
-  userId Int?  @unique
-  user   User? @relation(fields: [userId], references: [id])
-
-  programId Int
-  program   Program @relation(fields: [programId], references: [id])
-
-  // Current section (optional if you want historical in Enrollment)
-  sectionId Int?
-  section   Section? @relation(fields: [sectionId], references: [id])
-
-  // Relations
-  enrollments Enrollment[]
-  marks       Mark[]
-  attendance  Attendance[]
-  feedbacks   Feedback[]
-  messages    MessageLog[]
-  results     Result[]
+  dob             DateTime?
+  gender          Gender?
+  guardianEmail   String?
+  guardianName    String?
+  guardianPhone   String?
+  photoUrl        String?
+  pincode         String?
+  programId       Int
+  sectionId       Int?
+  state           String?
+  userId          Int?         @unique
+  attendance      Attendance[]
+  enrollments     Enrollment[]
+  feedbacks       Feedback[]
+  marks           Mark[]
+  messages        MessageLog[]
+  results         Result[]
+  program         Program      @relation(fields: [programId], references: [id])
+  section         Section?     @relation(fields: [sectionId], references: [id])
+  user            User?        @relation(fields: [userId], references: [id])
 }
 
 model Staff {
-  id          Int     @id @default(autoincrement())
-  employeeId  String  @unique
-  designation String
-  photoUrl    String?
-
-  // NEW: HR info
-  phone         String?
-  emailAlt      String?
-  qualification String?
-  joiningDate   DateTime?
-
-  // Foreign keys
-  userId Int?  @unique
-  user   User? @relation(fields: [userId], references: [id])
-
-  departmentId Int
-  department   Department @relation(fields: [departmentId], references: [id])
-
-  // Relations
-  assignments        StaffAssignment[]
+  id                 Int               @id @default(autoincrement())
+  employeeId         String            @unique
+  designation        String
+  departmentId       Int
+  emailAlt           String?
+  joiningDate        DateTime?
+  phone              String?
+  photoUrl           String?
+  qualification      String?
+  userId             Int?              @unique
   assessmentsCreated Assessment[]
+  auditLogs          AuditLog[]        @relation("AuditOnStaff")
   sessionsTaken      ClassSession[]    @relation("SessionTakenBy")
   feedbacks          Feedback[]        @relation("FeedbackToStaff")
-
-  auditLogs AuditLog[] @relation("AuditOnStaff")
+  department         Department        @relation(fields: [departmentId], references: [id])
+  user               User?             @relation(fields: [userId], references: [id])
+  assignments        StaffAssignment[]
 }
 
-/**
- * =========================
- * Academic structure
- * =========================
- */
+/// *
+///  * =========================
+///  * Academic structure
+///  * =========================
 model Department {
   id       Int       @id @default(autoincrement())
-  code     String    @unique // e.g., "ME", "CSE", "EL"
-  name     String // e.g., "Mechanical", "Computer Science", "Electrical"
+  code     String    @unique
+  name     String
   programs Program[]
   staff    Staff[]
 }
 
 model Program {
   id                Int        @id @default(autoincrement())
-  code              String     @unique // e.g., "ITI-FITTER", "ITI-CSE"
+  code              String     @unique
   name              String
-  durationSemesters Int // ITI: use semesters or years (convert to semesters)
+  durationSemesters Int
   departmentId      Int
   department        Department @relation(fields: [departmentId], references: [id])
-
-  sections Section[]
-  subjects Subject[]
-  students Student[]
-  results  Result[]
+  results           Result[]
+  sections          Section[]
+  students          Student[]
+  subjects          Subject[]
 }
 
 model Section {
-  id           Int     @id @default(autoincrement())
-  name         String // e.g., "A", "B", "Batch-2025-1"
-  academicYear String // e.g., "2025-2026"
+  id           Int               @id @default(autoincrement())
+  name         String
+  academicYear String
   semester     Int
-  shift        Shift? // MORNING/EVENING
+  shift        Shift?
   programId    Int
-  program      Program @relation(fields: [programId], references: [id])
-
-  // Relations
-  enrollments Enrollment[]
-  assignments StaffAssignment[]
-  sessions    ClassSession[]
-  assessments Assessment[]
-  students    Student[] // if you keep current section directly on Student
+  assessments  Assessment[]
+  sessions     ClassSession[]
+  enrollments  Enrollment[]
+  program      Program           @relation(fields: [programId], references: [id])
+  assignments  StaffAssignment[]
+  students     Student[]
 }
 
-enum Shift {
-  MORNING
-  EVENING
-}
-
-/**
- * =========================
- * Subjects & teaching assignment
- * =========================
- */
+/// *
+///  * =========================
+///  * Subjects & teaching assignment
+///  * =========================
 model Subject {
-  id             Int    @id @default(autoincrement())
-  code           String @unique
+  id             Int               @id @default(autoincrement())
   name           String
+  code           String            @unique
+  practicalHours Int?
+  programId      Int
   semester       Int
   theoryHours    Int?
-  practicalHours Int?
-
-  programId Int
-  program   Program @relation(fields: [programId], references: [id])
-
-  assignments StaffAssignment[]
-  sessions    ClassSession[]
-  attendance  Attendance[]
-  assessments Assessment[]
-  feedbacks   Feedback[]
+  assessments    Assessment[]
+  attendance     Attendance[]
+  sessions       ClassSession[]
+  feedbacks      Feedback[]
+  assignments    StaffAssignment[]
+  program        Program           @relation(fields: [programId], references: [id])
 }
 
 model StaffAssignment {
-  id      Int   @id @default(autoincrement())
-  staffId Int
-  staff   Staff @relation(fields: [staffId], references: [id])
-
+  id        Int            @id @default(autoincrement())
+  staffId   Int
   subjectId Int
-  subject   Subject @relation(fields: [subjectId], references: [id])
-
   sectionId Int
-  section   Section @relation(fields: [sectionId], references: [id])
-
-  termId Int
-  term   AcademicTerm @relation(fields: [termId], references: [id])
-
-  sessions ClassSession[]
-
-  active Boolean @default(true)
+  termId    Int
+  active    Boolean        @default(true)
+  sessions  ClassSession[]
+  section   Section        @relation(fields: [sectionId], references: [id])
+  staff     Staff          @relation(fields: [staffId], references: [id])
+  subject   Subject        @relation(fields: [subjectId], references: [id])
+  term      AcademicTerm   @relation(fields: [termId], references: [id])
 
   @@unique([staffId, subjectId, sectionId, termId], name: "uniq_assignment")
 }
 
 model AcademicTerm {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique // e.g., "Odd-2025", "Even-2026"
-  startDate DateTime
-  endDate   DateTime
-
-  assignments StaffAssignment[]
-  enrollments Enrollment[]
-  sessions    ClassSession[]
+  id          Int               @id @default(autoincrement())
+  name        String            @unique
+  startDate   DateTime
+  endDate     DateTime
   assessments Assessment[]
+  sessions    ClassSession[]
+  enrollments Enrollment[]
   feedbacks   Feedback[]
   results     Result[]
+  assignments StaffAssignment[]
 }
 
-/**
- * =========================
- * Enrollment (history-friendly)
- * =========================
- */
+/// *
+///  * =========================
+///  * Enrollment (history-friendly)
+///  * =========================
 model Enrollment {
-  id        Int     @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   studentId Int
-  student   Student @relation(fields: [studentId], references: [id])
-
   sectionId Int
-  section   Section @relation(fields: [sectionId], references: [id])
-
-  termId Int
-  term   AcademicTerm @relation(fields: [termId], references: [id])
-
-  status EnrollmentStatus @default(ACTIVE)
+  termId    Int
+  status    EnrollmentStatus @default(ACTIVE)
+  section   Section          @relation(fields: [sectionId], references: [id])
+  student   Student          @relation(fields: [studentId], references: [id])
+  term      AcademicTerm     @relation(fields: [termId], references: [id])
 
   @@unique([studentId, sectionId, termId], name: "uniq_student_section_term")
+}
+
+/// *
+///  * =========================
+///  * Class sessions & attendance
+///  * =========================
+model ClassSession {
+  id             Int              @id @default(autoincrement())
+  sectionId      Int
+  subjectId      Int
+  takenByStaffId Int
+  termId         Int
+  scheduledAt    DateTime
+  durationMin    Int?
+  room           String?
+  assignmentId   Int?
+  attendance     Attendance[]
+  assignment     StaffAssignment? @relation(fields: [assignmentId], references: [id])
+  section        Section          @relation(fields: [sectionId], references: [id])
+  subject        Subject          @relation(fields: [subjectId], references: [id])
+  takenBy        Staff            @relation("SessionTakenBy", fields: [takenByStaffId], references: [id])
+  term           AcademicTerm     @relation(fields: [termId], references: [id])
+
+  @@unique([sectionId, subjectId, scheduledAt], name: "uniq_session_time")
+}
+
+model Attendance {
+  id        Int              @id @default(autoincrement())
+  status    AttendanceStatus
+  studentId Int
+  subjectId Int
+  markedAt  DateTime         @default(now())
+  sessionId Int
+  session   ClassSession     @relation(fields: [sessionId], references: [id])
+  student   Student          @relation(fields: [studentId], references: [id])
+  subject   Subject          @relation(fields: [subjectId], references: [id])
+
+  @@unique([sessionId, studentId], name: "uniq_session_student")
+}
+
+/// *
+///  * =========================
+///  * Assessment & marks
+///  * =========================
+model Assessment {
+  id          Int          @id @default(autoincrement())
+  name        String
+  date        DateTime
+  maxMarks    Int
+  weightage   Float?
+  sectionId   Int
+  subjectId   Int
+  termId      Int
+  createdById Int
+  createdBy   Staff        @relation(fields: [createdById], references: [id])
+  section     Section      @relation(fields: [sectionId], references: [id])
+  subject     Subject      @relation(fields: [subjectId], references: [id])
+  term        AcademicTerm @relation(fields: [termId], references: [id])
+  marks       Mark[]
+
+  @@index([sectionId, subjectId, termId])
+}
+
+model Mark {
+  id            Int        @id @default(autoincrement())
+  assessmentId  Int
+  studentId     Int
+  marksObtained Int
+  assessment    Assessment @relation(fields: [assessmentId], references: [id])
+  student       Student    @relation(fields: [studentId], references: [id])
+
+  @@unique([assessmentId, studentId], name: "uniq_assessment_student")
+}
+
+/// *
+///  * =========================
+///  * Result (final per term)
+///  * =========================
+model Result {
+  id          Int          @id @default(autoincrement())
+  studentId   Int
+  termId      Int
+  programId   Int
+  totalMarks  Int
+  maxMarks    Int
+  percentage  Float
+  grade       String?
+  publishedAt DateTime?
+  createdAt   DateTime     @default(now())
+  breakdown   Json?
+  program     Program      @relation(fields: [programId], references: [id])
+  student     Student      @relation(fields: [studentId], references: [id])
+  term        AcademicTerm @relation(fields: [termId], references: [id])
+
+  @@unique([studentId, termId], name: "uniq_student_term_result")
+}
+
+/// *
+///  * =========================
+///  * Feedback (student -> teacher)
+///  * =========================
+model Feedback {
+  id        Int          @id @default(autoincrement())
+  studentId Int
+  staffId   Int
+  subjectId Int
+  termId    Int
+  rating    Int
+  comments  String?
+  createdAt DateTime     @default(now())
+  staff     Staff        @relation("FeedbackToStaff", fields: [staffId], references: [id])
+  student   Student      @relation(fields: [studentId], references: [id])
+  subject   Subject      @relation(fields: [subjectId], references: [id])
+  term      AcademicTerm @relation(fields: [termId], references: [id])
+
+  @@unique([studentId, staffId, subjectId, termId], name: "uniq_feedback_scope")
+}
+
+/// *
+///  * =========================
+///  * Messaging / notifications
+///  * =========================
+model MessageLog {
+  id          Int            @id @default(autoincrement())
+  studentId   Int
+  messageType MessageType
+  channel     MessageChannel
+  payload     Json?
+  status      MessageStatus  @default(PENDING)
+  providerId  String?
+  sentAt      DateTime?
+  createdAt   DateTime       @default(now())
+  student     Student        @relation(fields: [studentId], references: [id])
+
+  @@index([studentId, messageType, createdAt])
+}
+
+/// *
+///  * =========================
+///  * Help / support & password reset
+///  * =========================
+model HelpRequest {
+  id          Int           @id @default(autoincrement())
+  title       String
+  description String
+  status      RequestStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id])
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+/// *
+///  * =========================
+///  * Official Calendar (Holidays)
+///  * =========================
+model Holiday {
+  id        Int      @id @default(autoincrement())
+  name      String
+  date      DateTime @unique
+  createdAt DateTime @default(now())
+}
+
+/// *
+///  * =========================
+///  * Audit / logs
+///  * =========================
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  actorId   Int?
+  staffId   Int?
+  meta      Json?
+  createdAt DateTime @default(now())
+  actor     User?    @relation("AuditByUser", fields: [actorId], references: [id])
+  staff     Staff?   @relation("AuditOnStaff", fields: [staffId], references: [id])
+
+  @@index([actorId, createdAt])
+}
+
+model AdmissionForm {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String
+  course    String
+  status    FormStatus @default(PENDING)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model ContactForm {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String
+  message   String
+  status    FormStatus @default(PENDING)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+enum Shift {
+  MORNING
+  EVENING
 }
 
 enum EnrollmentStatus {
@@ -237,177 +402,11 @@ enum EnrollmentStatus {
   DROPPED
 }
 
-/**
- * =========================
- * Class sessions & attendance
- * =========================
- */
-model ClassSession {
-  id        Int     @id @default(autoincrement())
-  sectionId Int
-  section   Section @relation(fields: [sectionId], references: [id])
-
-  subjectId Int
-  subject   Subject @relation(fields: [subjectId], references: [id])
-
-  takenByStaffId Int
-  takenBy        Staff @relation("SessionTakenBy", fields: [takenByStaffId], references: [id])
-
-  termId Int
-  term   AcademicTerm @relation(fields: [termId], references: [id])
-
-  scheduledAt DateTime
-  durationMin Int?
-  room        String?
-
-  assignmentId Int?
-  assignment   StaffAssignment? @relation(fields: [assignmentId], references: [id])
-
-  attendance Attendance[]
-
-  @@unique([sectionId, subjectId, scheduledAt], name: "uniq_session_time")
-}
-
-model Attendance {
-  id        Int          @id @default(autoincrement())
-  sessionId Int
-  session   ClassSession @relation(fields: [sessionId], references: [id])
-
-  studentId Int
-  student   Student @relation(fields: [studentId], references: [id])
-
-  subjectId Int
-  subject   Subject @relation(fields: [subjectId], references: [id])
-
-  status   AttendanceStatus
-  markedAt DateTime         @default(now())
-
-  @@unique([sessionId, studentId], name: "uniq_session_student")
-}
-
 enum AttendanceStatus {
   PRESENT
   ABSENT
   LATE
   EXCUSED
-}
-
-/**
- * =========================
- * Assessment & marks
- * =========================
- */
-model Assessment {
-  id        Int      @id @default(autoincrement())
-  name      String // IA1 / Midterm / Practical Test
-  date      DateTime
-  maxMarks  Int
-  weightage Float? // optional for % calc
-
-  sectionId Int
-  section   Section @relation(fields: [sectionId], references: [id])
-
-  subjectId Int
-  subject   Subject @relation(fields: [subjectId], references: [id])
-
-  termId Int
-  term   AcademicTerm @relation(fields: [termId], references: [id])
-
-  createdById Int
-  createdBy   Staff @relation(fields: [createdById], references: [id])
-
-  marks Mark[]
-
-  @@index([sectionId, subjectId, termId])
-}
-
-model Mark {
-  id           Int        @id @default(autoincrement())
-  assessmentId Int
-  assessment   Assessment @relation(fields: [assessmentId], references: [id])
-
-  studentId Int
-  student   Student @relation(fields: [studentId], references: [id])
-
-  marksObtained Int
-
-  @@unique([assessmentId, studentId], name: "uniq_assessment_student")
-}
-
-/**
- * =========================
- * Result (final per term)
- * =========================
- */
-model Result {
-  id        Int     @id @default(autoincrement())
-  studentId Int
-  student   Student @relation(fields: [studentId], references: [id])
-
-  termId Int
-  term   AcademicTerm @relation(fields: [termId], references: [id])
-
-  programId Int
-  program   Program @relation(fields: [programId], references: [id])
-
-  totalMarks  Int
-  maxMarks    Int
-  percentage  Float
-  grade       String? // optional grade bucket
-  publishedAt DateTime?
-  createdAt   DateTime  @default(now())
-
-  breakdown Json? // optional { subjectCode: { obtained, max } }
-
-  @@unique([studentId, termId], name: "uniq_student_term_result")
-}
-
-/**
- * =========================
- * Feedback (student -> teacher)
- * =========================
- */
-model Feedback {
-  id        Int     @id @default(autoincrement())
-  studentId Int
-  student   Student @relation(fields: [studentId], references: [id])
-
-  staffId Int
-  staff   Staff @relation("FeedbackToStaff", fields: [staffId], references: [id])
-
-  subjectId Int
-  subject   Subject @relation(fields: [subjectId], references: [id])
-
-  termId Int
-  term   AcademicTerm @relation(fields: [termId], references: [id])
-
-  rating    Int
-  comments  String?
-  createdAt DateTime @default(now())
-
-  @@unique([studentId, staffId, subjectId, termId], name: "uniq_feedback_scope")
-}
-
-/**
- * =========================
- * Messaging / notifications
- * =========================
- */
-model MessageLog {
-  id        Int     @id @default(autoincrement())
-  studentId Int
-  student   Student @relation(fields: [studentId], references: [id])
-
-  messageType MessageType
-  channel     MessageChannel
-  payload     Json?
-  status      MessageStatus  @default(PENDING)
-  providerId  String? // Twilio SID / Email id
-  sentAt      DateTime?
-
-  createdAt DateTime @default(now())
-
-  @@index([studentId, messageType, createdAt])
 }
 
 enum MessageType {
@@ -427,91 +426,10 @@ enum MessageStatus {
   FAILED
 }
 
-/**
- * =========================
- * Help / support & password reset
- * =========================
- */
-model HelpRequest {
-  id          Int           @id @default(autoincrement())
-  title       String
-  description String
-  status      RequestStatus @default(PENDING)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
-}
-
 enum RequestStatus {
   PENDING
   IN_PROGRESS
   RESOLVED
-}
-
-model PasswordResetToken {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-}
-
-// ... (Your existing schema)
-
-/**
- * =========================
- * Official Calendar (Holidays)
- * =========================
- */
-model Holiday {
-  id        Int      @id @default(autoincrement())
-  name      String
-  date      DateTime @unique
-  createdAt DateTime @default(now())
-}
-
-/**
- * =========================
- * Audit / logs
- * =========================
- */
-model AuditLog {
-  id      Int    @id @default(autoincrement())
-  action  String
-  actorId Int? // nullable for system jobs
-  actor   User?  @relation("AuditByUser", fields: [actorId], references: [id])
-
-  staffId Int?
-  staff   Staff? @relation("AuditOnStaff", fields: [staffId], references: [id])
-
-  meta      Json?
-  createdAt DateTime @default(now())
-
-  @@index([actorId, createdAt])
-}
-
-model AdmissionForm {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String
-  phone     String
-  course    String
-  status    FormStatus @default(PENDING) // pending, reviewed, resolved
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model ContactForm {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String
-  message   String
-  status    FormStatus @default(PENDING)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 enum FormStatus {
@@ -520,12 +438,10 @@ enum FormStatus {
   RESOLVED
 }
 
-
-/**
- * =========================
- * Enums
- * =========================
- */
+/// *
+///  * =========================
+///  * Enums
+///  * =========================
 enum Role {
   STUDENT
   STAFF

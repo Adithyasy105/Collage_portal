@@ -1,0 +1,299 @@
+/* Color Palette & Fonts */
+:root {
+  --primary-color: #0d47a1;
+  --primary-dark: #002e73;
+  --secondary-color: #4db6ac;
+  --secondary-dark: #37867e;
+  --bg-light: #f5f7fa;
+  --card-bg: #ffffff;
+  --text-color: #263238;
+  --text-light: #78909c;
+  --border-color: #e0e0e0;
+  --error-color: #f44336;
+  --success-color: #4caf50;
+  --transition-speed: 0.3s;
+}
+
+/* Global Container & Layout */
+.adminContainer {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 0 16px rgba(0,0,0,0.1);
+}
+
+.title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+}
+
+/* Navigation Tabs */
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.navButton {
+  background: var(--bg-light);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-color);
+  transition: all var(--transition-speed) ease-in-out;
+}
+
+.navButton:hover {
+  background: var(--border-color);
+}
+
+.activeTab {
+  background: var(--primary-color);
+  color: var(--card-bg);
+  box-shadow: 0 4px 10px rgba(0, 77, 156, 0.2);
+}
+
+.tabContent {
+  margin-top: 1rem;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Forms */
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: flex-end;
+}
+
+.form input,
+.form select {
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  flex: 1 1 200px;
+  transition: all var(--transition-speed) ease-in-out;
+}
+
+.form input:focus,
+.form select:focus {
+  border-color: var(--primary-color);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.2);
+}
+
+.form label {
+  font-weight: 600;
+  color: var(--text-color);
+  display: block;
+}
+
+.btnPrimary, .btnSecondary, .btnSmall, .btnSmallDanger {
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-speed) ease-in-out;
+  text-transform: capitalize;
+}
+
+.btnPrimary {
+  background-color: var(--primary-color);
+  color: var(--card-bg);
+}
+
+.btnPrimary:hover {
+  background-color: var(--primary-dark);
+}
+
+.btnPrimary:disabled {
+  background-color: var(--text-light);
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  background-color: var(--text-light);
+  color: var(--card-bg);
+}
+
+.btnSecondary:hover {
+  background-color: #546571;
+}
+
+.btnSmall {
+  background-color: var(--secondary-color);
+  color: var(--card-bg);
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  margin-right: 0.5rem;
+}
+
+.btnSmall:hover {
+  background-color: var(--secondary-dark);
+}
+
+.btnSmallDanger {
+  background-color: var(--error-color);
+  color: var(--card-bg);
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+}
+
+.btnSmallDanger:hover {
+  background-color: #bd2130;
+}
+
+/* Table */
+.tableContainer {
+  overflow-x: auto;
+  margin-top: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--card-bg);
+}
+
+.table th,
+.table td {
+  border: 1px solid var(--border-color);
+  padding: 0.8rem;
+  text-align: left;
+}
+
+.table th {
+  background-color: var(--primary-color);
+  color: var(--card-bg);
+  font-weight: 600;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: var(--bg-light);
+}
+
+.table tbody tr:hover {
+  background-color: var(--border-color);
+}
+
+/* Card Grid */
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.card {
+  background: var(--bg-light);
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  transition: transform var(--transition-speed);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.error, .success {
+  padding: 0.75rem;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.error {
+  background-color: var(--error-color);
+  color: var(--card-bg);
+}
+
+.success {
+  background-color: var(--success-color);
+  color: var(--card-bg);
+}
+
+.uploadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.uploadLabel {
+  background-color: var(--secondary-color);
+  color: var(--color-white);
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease-in-out;
+}
+
+.uploadLabel:hover {
+  background-color: var(--secondary-dark);
+}
+
+.uploadLabel input[type="file"] {
+  display: none;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .adminContainer {
+    padding: 1rem;
+  }
+  
+  .form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form input,
+  .form select {
+    flex: 1 1 100%;
+    min-width: auto;
+  }
+
+  .btnPrimary,
+  .btnSecondary {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+
+  .nav {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .navButton {
+    width: 100%;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+  
+  .cardGrid {
+    grid-template-columns: 1fr;
+  }
+}

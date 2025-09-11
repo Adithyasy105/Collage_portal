@@ -1,239 +1,367 @@
+// controllers/adminController.js
 import prisma from "../config/prisma.js";
 import { importUsers } from "../utils/importUsers.js";
-import { Readable } from 'stream';
-import csv from 'csv-parser';
-import multer from "multer";
+import { Readable } from "stream";
+import csvParser from "csv-parser";
+import bcrypt from "bcryptjs";
+import { Parser as Json2csvParser } from "json2csv";
+
 /**
- * =============================
- * USERS
- * =============================
+ * Admin controller
+ *
+ * Exports:
+ * - uploadUsers, uploadHolidays
+ * - createUser, getUsers, updateUser, deleteUser
+ * - getAllStudents, getAllStaff
+ * - createDepartment, getDepartments
+ * - createProgram, getPrograms
+ * - createSection, getSections
+ * - createTerm, getTerms
+ * - createSubject, getSubjects
+ * - createHoliday, getHolidays, deleteHoliday
+ * - getAuditLogs
+ * - getIncompleteStudents, getIncompleteStaff
+ * - getFeedbackForStaff, exportFeedbackCsv
+ * - getTeacherAverageRatings
+ * - generateResults
  */
 
-// POST /api/admin/upload-users
+// -----------------------------
+// Helper: parse CSV buffer into rows (array of objects)
+// -----------------------------
+const parseCsvBuffer = (buffer, headers = true) =>
+  new Promise((resolve, reject) => {
+    const rows = [];
+    const stream = Readable.from(buffer);
+    stream
+      .pipe(csvParser({ skipLines: 0, mapHeaders: ({ header }) => header?.trim() }))
+      .on("data", (data) => rows.push(data))
+      .on("end", () => resolve(rows))
+      .on("error", (err) => reject(err));
+  });
+
+// =============================
+// USERS
+// =============================
 export const uploadUsers = async (req, res) => {
   try {
     if (!req.file?.buffer) {
       return res.status(400).json({ message: "CSV file required" });
     }
-    await importUsers(req.file.buffer, true);
-    res.json({ message: "Users imported successfully." });
+    const result = await importUsers(req.file.buffer, true);
+    return res.json({ message: "Users imported successfully.", details: result });
   } catch (e) {
     console.error("UploadUsers Error:", e);
-    res.status(500).json({ message: "Import failed", error: e.message });
+    return res.status(500).json({ message: "Import failed", error: e.message });
   }
 };
 
-// POST /api/admin/users
 export const createUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
-    // 1. Validate required fields
     if (!name || !email || !password) {
       return res.status(400).json({ message: "Name, email, and password are required." });
     }
 
-    // 2. Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const existing = await prisma.user.findUnique({ where: { email } });
+    if (existing) {
+      return res.status(409).json({ message: "Email already exists." });
+    }
 
-    // 3. Explicitly pick allowed fields to create the user
-    const user = await prisma.user.create({ 
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
-        role: role || "STUDENT" // Default role to STUDENT if not provided
-      }
-    });
-
-    // You may want to prevent an admin from creating other admins through the API unless a specific check is performed.
-
-    // 4. Do NOT send the password back
-    const { password: _, ...userData } = user;
-    res.status(201).json(userData);
-  } catch (e) {
-    res.status(400).json({ message: "Failed to create user", error: e.message });
-  }
-};
-
-// Corrected updateUser
-export const updateUser = async (req, res) => {
-  try {
-    const userId = parseInt(req.params.id);
-    const { name, email, role } = req.body; // Explicitly pick updatable fields
-
-    // You might need a more complex update logic for password changes
-
-    const user = await prisma.user.update({
-      where: { id: userId },
-      data: { name, email, role }, // Pass only the explicitly allowed fields
+        role: (role || "STUDENT").toUpperCase(),
+      },
     });
 
     const { password: _, ...userData } = user;
-    res.json(userData);
+    return res.status(201).json(userData);
   } catch (e) {
-    res.status(400).json({ message: "Failed to update user", error: e.message });
+    console.error("createUser:", e);
+    return res.status(400).json({ message: "Failed to create user", error: e.message });
   }
 };
 
-// GET /api/admin/users
 export const getUsers = async (req, res) => {
   try {
     const users = await prisma.user.findMany({
       include: { student: true, staff: true },
+      orderBy: { createdAt: "desc" },
     });
-    res.json(users);
+    return res.json(users);
   } catch (e) {
-    res.status(500).json({ message: "Failed to fetch users", error: e.message });
+    console.error("getUsers:", e);
+    return res.status(500).json({ message: "Failed to fetch users", error: e.message });
   }
 };
 
-// PUT /api/admin/users/:id
+export const updateUser = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { name, email, password, role } = req.body;
 
-// DELETE /api/admin/users/:id
+    const data = {};
+    if (name) data.name = name;
+    if (email) data.email = email;
+    if (role) data.role = role;
+    if (password) data.password = await bcrypt.hash(password, 10);
+
+    const user = await prisma.user.update({
+      where: { id },
+      data,
+    });
+
+    const { password: _, ...userData } = user;
+    return res.json(userData);
+  } catch (e) {
+    console.error("updateUser:", e);
+    return res.status(400).json({ message: "Failed to update user", error: e.message });
+  }
+};
+
 export const deleteUser = async (req, res) => {
   try {
-    await prisma.user.delete({ where: { id: parseInt(req.params.id) } });
-    res.json({ message: "User deleted" });
+    const id = Number(req.params.id);
+    await prisma.user.delete({ where: { id } });
+    return res.json({ message: "User deleted" });
   } catch (e) {
-    res.status(400).json({ message: "Failed to delete user", error: e.message });
+    console.error("deleteUser:", e);
+    return res.status(400).json({ message: "Failed to delete user", error: e.message });
   }
 };
 
-
-
 // =============================
-// Get All Students
+// Get All Students / Staff
 // =============================
 export const getAllStudents = async (req, res) => {
   try {
     const students = await prisma.student.findMany({
-      include: { user: true }, // also fetch linked user info
+      include: { user: true, program: true, section: true },
     });
-    res.json(students);
+    return res.json(students);
   } catch (e) {
-    res.status(500).json({ message: "Failed to fetch students", error: e.message });
+    console.error("getAllStudents:", e);
+    return res.status(500).json({ message: "Failed to fetch students", error: e.message });
   }
 };
 
-// =============================
-// Get All Staff
-// =============================
 export const getAllStaff = async (req, res) => {
   try {
     const staff = await prisma.staff.findMany({
-      include: { user: true, department: true }, // also fetch linked user + department
+      include: { user: true, department: true },
     });
-    res.json(staff);
+    return res.json(staff);
   } catch (e) {
-    res.status(500).json({ message: "Failed to fetch staff", error: e.message });
+    console.error("getAllStaff:", e);
+    return res.status(500).json({ message: "Failed to fetch staff", error: e.message });
   }
 };
 
-/**
- * =============================
- * MASTER DATA (Department, Program, Section, Term, Subject)
- * =============================
- */
+// =============================
+// HOLIDAY MANAGEMENT
+// =============================
+export const createHoliday = async (req, res) => {
+  try {
+    const { name, date } = req.body;
+    if (!name || !date) {
+      return res.status(400).json({ message: "name and date are required" });
+    }
+    const holiday = await prisma.holiday.create({
+      data: { name, date: new Date(date) },
+    });
+    return res.status(201).json(holiday);
+  } catch (err) {
+    console.error("createHoliday:", err);
+    return res.status(500).json({ error: "Failed to create holiday", details: err.message });
+  }
+};
 
+export const getHolidays = async (req, res) => {
+  try {
+    const holidays = await prisma.holiday.findMany({ orderBy: { date: "asc" } });
+    return res.json(holidays);
+  } catch (e) {
+    console.error("getHolidays:", e);
+    return res.status(500).json({ message: "Failed to fetch holidays", error: e.message });
+  }
+};
+
+export const deleteHoliday = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    await prisma.holiday.delete({ where: { id } });
+    return res.json({ message: "Holiday deleted" });
+  } catch (e) {
+    console.error("deleteHoliday:", e);
+    return res.status(400).json({ message: "Failed to delete holiday", error: e.message });
+  }
+};
+
+export const uploadHolidays = async (req, res) => {
+  try {
+    if (!req.file?.buffer) return res.status(400).json({ message: "CSV file required" });
+    const rows = await parseCsvBuffer(req.file.buffer);
+
+    // Expect rows with at least: name, date (ISO or recognizable)
+    const created = [];
+    const errors = [];
+    for (const r of rows) {
+      try {
+        if (!r.name || !r.date) throw new Error("Missing name or date");
+        const d = new Date(r.date);
+        if (isNaN(d)) throw new Error("Invalid date: " + r.date);
+        const record = await prisma.holiday.create({
+          data: { name: r.name.trim(), date: d },
+        });
+        created.push(record);
+      } catch (err) {
+        errors.push({ row: r, error: err.message });
+      }
+    }
+    return res.json({ createdCount: created.length, created, errors });
+  } catch (e) {
+    console.error("uploadHolidays:", e);
+    return res.status(500).json({ message: "Failed to upload holidays", error: e.message });
+  }
+};
+
+// =============================
+// MASTER DATA (Department, Program, Section, Term, Subject)
+// =============================
 export const createDepartment = async (req, res) => {
   try {
     const dep = await prisma.department.create({ data: req.body });
-    res.status(201).json(dep);
+    return res.status(201).json(dep);
   } catch (e) {
-    res.status(400).json({ message: "Failed to create department", error: e.message });
+    console.error("createDepartment:", e);
+    return res.status(400).json({ message: "Failed to create department", error: e.message });
   }
 };
 
 export const getDepartments = async (req, res) => {
-  const deps = await prisma.department.findMany({ include: { programs: true } });
-  res.json(deps);
+  try {
+    const deps = await prisma.department.findMany({ include: { programs: true, staff: true } });
+    return res.json(deps);
+  } catch (e) {
+    console.error("getDepartments:", e);
+    return res.status(500).json({ message: "Failed to fetch departments", error: e.message });
+  }
 };
 
 export const createProgram = async (req, res) => {
   try {
     const prog = await prisma.program.create({ data: req.body });
-    res.status(201).json(prog);
+    return res.status(201).json(prog);
   } catch (e) {
-    res.status(400).json({ message: "Failed to create program", error: e.message });
+    console.error("createProgram:", e);
+    return res.status(400).json({ message: "Failed to create program", error: e.message });
   }
 };
 
 export const getPrograms = async (req, res) => {
-  const progs = await prisma.program.findMany({ include: { department: true } });
-  res.json(progs);
+  try {
+    const progs = await prisma.program.findMany({ include: { department: true } });
+    return res.json(progs);
+  } catch (e) {
+    console.error("getPrograms:", e);
+    return res.status(500).json({ message: "Failed to fetch programs", error: e.message });
+  }
 };
 
 export const createSection = async (req, res) => {
   try {
     const sec = await prisma.section.create({ data: req.body });
-    res.status(201).json(sec);
+    return res.status(201).json(sec);
   } catch (e) {
-    res.status(400).json({ message: "Failed to create section", error: e.message });
+    console.error("createSection:", e);
+    return res.status(400).json({ message: "Failed to create section", error: e.message });
   }
 };
 
 export const getSections = async (req, res) => {
-  const secs = await prisma.section.findMany({ include: { program: true } });
-  res.json(secs);
+  try {
+    const secs = await prisma.section.findMany({ include: { program: true } });
+    return res.json(secs);
+  } catch (e) {
+    console.error("getSections:", e);
+    return res.status(500).json({ message: "Failed to fetch sections", error: e.message });
+  }
 };
 
 export const createTerm = async (req, res) => {
   try {
+    const { startDate, endDate, ...rest } = req.body;
     const term = await prisma.academicTerm.create({
       data: {
-        ...req.body,
-        startDate: new Date(req.body.startDate),
-        endDate: new Date(req.body.endDate),
+        ...rest,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
       },
     });
-    res.status(201).json(term);
+    return res.status(201).json(term);
   } catch (e) {
-    res.status(400).json({ message: "Failed to create term", error: e.message });
+    console.error("createTerm:", e);
+    return res.status(400).json({ message: "Failed to create term", error: e.message });
   }
 };
 
 export const getTerms = async (req, res) => {
-  const terms = await prisma.academicTerm.findMany();
-  res.json(terms);
+  try {
+    const terms = await prisma.academicTerm.findMany({ orderBy: { startDate: "desc" } });
+    return res.json(terms);
+  } catch (e) {
+    console.error("getTerms:", e);
+    return res.status(500).json({ message: "Failed to fetch terms", error: e.message });
+  }
 };
 
 export const createSubject = async (req, res) => {
   try {
     const subj = await prisma.subject.create({ data: req.body });
-    res.status(201).json(subj);
+    return res.status(201).json(subj);
   } catch (e) {
-    res.status(400).json({ message: "Failed to create subject", error: e.message });
+    console.error("createSubject:", e);
+    return res.status(400).json({ message: "Failed to create subject", error: e.message });
   }
 };
 
 export const getSubjects = async (req, res) => {
-  const subs = await prisma.subject.findMany({ include: { program: true } });
-  res.json(subs);
+  try {
+    const subs = await prisma.subject.findMany({ include: { program: true } });
+    return res.json(subs);
+  } catch (e) {
+    console.error("getSubjects:", e);
+    return res.status(500).json({ message: "Failed to fetch subjects", error: e.message });
+  }
 };
 
-/**
- * =============================
- * AUDIT
- * =============================
- */
+// =============================
+// AUDIT
+// =============================
 export const getAuditLogs = async (req, res) => {
-  const logs = await prisma.auditLog.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { actor: true, staff: true },
-  });
-  res.json(logs);
+  try {
+    const logs = await prisma.auditLog.findMany({
+      orderBy: { createdAt: "desc" },
+      include: { actor: true, staff: true },
+      take: 1000,
+    });
+    return res.json(logs);
+  } catch (e) {
+    console.error("getAuditLogs:", e);
+    return res.status(500).json({ message: "Failed to fetch audit logs", error: e.message });
+  }
 };
-
 
 // =============================
 // Profile Completion Summary
 // =============================
-
-// Students with incomplete profiles
 export const getIncompleteStudents = async (req, res) => {
   try {
-    // Define required fields for completion (empty string or 0 means incomplete)
     const students = await prisma.student.findMany({
       where: {
         OR: [
@@ -245,29 +373,25 @@ export const getIncompleteStudents = async (req, res) => {
       },
       include: { user: true, program: true, section: true },
     });
-    res.json({ count: students.length, students });
+    return res.json({ count: students.length, students });
   } catch (e) {
-    res.status(500).json({ message: "Failed to fetch incomplete students", error: e.message });
+    console.error("getIncompleteStudents:", e);
+    return res.status(500).json({ message: "Failed to fetch incomplete students", error: e.message });
   }
 };
 
-// Staff with incomplete profiles
 export const getIncompleteStaff = async (req, res) => {
   try {
-    // Define required fields for completion (empty string or 0 means incomplete)
     const staff = await prisma.staff.findMany({
       where: {
-        OR: [
-          { employeeId: "" },
-          { departmentId: 0 },
-          { designation: "" },
-        ],
+        OR: [{ employeeId: "" }, { departmentId: 0 }, { designation: "" }],
       },
       include: { user: true, department: true },
     });
-    res.json({ count: staff.length, staff });
+    return res.json({ count: staff.length, staff });
   } catch (e) {
-    res.status(500).json({ message: "Failed to fetch incomplete staff", error: e.message });
+    console.error("getIncompleteStaff:", e);
+    return res.status(500).json({ message: "Failed to fetch incomplete staff", error: e.message });
   }
 };
 
@@ -281,7 +405,6 @@ export const getFeedbackForStaff = async (req, res) => {
       return res.status(400).json({ message: "staffId is required" });
     }
 
-    // Build where clause for filtering
     const where = {
       staffId: Number(staffId),
     };
@@ -314,8 +437,7 @@ export const getFeedbackForStaff = async (req, res) => {
       orderBy: { createdAt: "desc" },
     });
 
-    // Format for frontend table
-    const result = feedbacks.map(fb => ({
+    const result = feedbacks.map((fb) => ({
       studentName: fb.student.user?.name,
       rollNumber: fb.student.rollNumber,
       department: fb.student.program?.department?.name,
@@ -325,9 +447,10 @@ export const getFeedbackForStaff = async (req, res) => {
       date: fb.createdAt,
     }));
 
-    res.json({ count: result.length, feedback: result });
+    return res.json({ count: result.length, feedback: result });
   } catch (e) {
-    res.status(500).json({ message: "Failed to fetch feedback", error: e.message });
+    console.error("getFeedbackForStaff:", e);
+    return res.status(500).json({ message: "Failed to fetch feedback", error: e.message });
   }
 };
 
@@ -337,11 +460,9 @@ export const getFeedbackForStaff = async (req, res) => {
 export const getTeacherAverageRatings = async (req, res) => {
   try {
     const { termId } = req.query;
-    // Build where clause for optional term filter
     const where = {};
     if (termId) where.termId = Number(termId);
 
-    // Group by staffId and calculate average rating and count
     const grouped = await prisma.feedback.groupBy({
       by: ["staffId"],
       where,
@@ -349,8 +470,7 @@ export const getTeacherAverageRatings = async (req, res) => {
       _count: { rating: true },
     });
 
-    // Get teacher info: name, photo, department
-    const staffIds = grouped.map(g => g.staffId);
+    const staffIds = grouped.map((g) => g.staffId);
     const staffList = await prisma.staff.findMany({
       where: { id: { in: staffIds } },
       select: {
@@ -361,29 +481,34 @@ export const getTeacherAverageRatings = async (req, res) => {
       },
     });
     const staffMap = Object.fromEntries(
-      staffList.map(s => [s.id, {
-        teacherName: s.user?.name || "Unknown",
-        photoUrl: s.photoUrl || null,
-        department: s.department?.name || null
-      }])
+      staffList.map((s) => [
+        s.id,
+        {
+          teacherName: s.user?.name || "Unknown",
+          photoUrl: s.photoUrl || null,
+          department: s.department?.name || null,
+        },
+      ])
     );
 
-    // Format and sort
-    const result = grouped.map(g => ({
-      staffId: g.staffId,
-      teacherName: staffMap[g.staffId]?.teacherName,
-      photoUrl: staffMap[g.staffId]?.photoUrl,
-      department: staffMap[g.staffId]?.department,
-      averageRating: Number(g._avg.rating?.toFixed(2)),
-      feedbackCount: g._count.rating
-    })).sort((a, b) => b.averageRating - a.averageRating);
+    const result = grouped
+      .map((g) => ({
+        staffId: g.staffId,
+        teacherName: staffMap[g.staffId]?.teacherName,
+        photoUrl: staffMap[g.staffId]?.photoUrl,
+        department: staffMap[g.staffId]?.department,
+        averageRating: Number(g._avg.rating?.toFixed(2)),
+        feedbackCount: g._count.rating,
+      }))
+      .sort((a, b) => b.averageRating - a.averageRating);
 
-    res.json(result);
+    return res.json(result);
   } catch (e) {
-    res.status(500).json({ message: "Failed to fetch teacher average ratings", error: e.message });
+    console.error("getTeacherAverageRatings:", e);
+    return res.status(500).json({ message: "Failed to fetch teacher average ratings", error: e.message });
   }
 };
-import { Parser as Json2csvParser } from "json2csv";
+
 // =============================
 // Export feedback for a staff as CSV
 // =============================
@@ -393,10 +518,8 @@ export const exportFeedbackCsv = async (req, res) => {
     if (!staffId) {
       return res.status(400).json({ message: "staffId is required" });
     }
-    // Build where clause for filtering
-    const where = {
-      staffId: Number(staffId),
-    };
+
+    const where = { staffId: Number(staffId) };
     if (fromDate || toDate) {
       where.createdAt = {};
       if (fromDate) where.createdAt.gte = new Date(fromDate);
@@ -426,8 +549,7 @@ export const exportFeedbackCsv = async (req, res) => {
       orderBy: { createdAt: "desc" },
     });
 
-    // Format for CSV
-    const data = feedbacks.map(fb => ({
+    const data = feedbacks.map((fb) => ({
       studentName: fb.student.user?.name,
       rollNumber: fb.student.rollNumber,
       department: fb.student.program?.department?.name,
@@ -445,210 +567,123 @@ export const exportFeedbackCsv = async (req, res) => {
     res.attachment("feedback.csv");
     return res.send(csv);
   } catch (e) {
-    res.status(500).json({ message: "Failed to export feedback as CSV", error: e.message });
+    console.error("exportFeedbackCsv:", e);
+    return res.status(500).json({ message: "Failed to export feedback as CSV", error: e.message });
   }
 };
 
- // Make sure multer is imported
-
-const upload = multer({ storage: multer.memoryStorage() });
-
-// ... (Your other existing admin functions)
-
-/**
- * Admin creates a new holiday.
- * POST /api/admin/holidays
- */
-export const createHoliday = async (req, res) => {
-  try {
-    const { name, date } = req.body;
-    if (!name || !date) {
-      return res.status(400).json({ message: "Name and date are required." });
-    }
-    const holiday = await prisma.holiday.create({
-      data: {
-        name,
-        date: new Date(date),
-      },
-    });
-    res.status(201).json(holiday);
-  } catch (e) {
-    if (e.code === 'P2002') {
-      return res.status(409).json({ message: "A holiday already exists on this date." });
-    }
-    console.error(e);
-    res.status(500).json({ message: "Failed to create holiday", error: e.message });
-  }
-};
-
-/**
- * Admin gets all holidays.
- * GET /api/admin/holidays
- */
-export const getHolidays = async (req, res) => {
-  try {
-    const holidays = await prisma.holiday.findMany({
-      orderBy: { date: "asc" }
-    });
-    res.json(holidays);
-  } catch (e) {
-    res.status(500).json({ message: "Failed to fetch holidays", error: e.message });
-  }
-};
-
-/**
- * Admin deletes a holiday.
- * DELETE /api/admin/holidays/:id
- */
-export const deleteHoliday = async (req, res) => {
-  try {
-    const holidayId = parseInt(req.params.id);
-    await prisma.holiday.delete({ where: { id: holidayId } });
-    res.json({ message: "Holiday deleted successfully." });
-  } catch (e) {
-    res.status(404).json({ message: "Holiday not found or failed to delete." });
-  }
-};
-
-/**
- * Admin uploads a CSV file to bulk-add holidays.
- * POST /api/admin/holidays/upload
- */
-export const uploadHolidays = async (req, res) => {
-  if (!req.file || !req.file.buffer) {
-    return res.status(400).json({ message: "CSV file is required." });
-  }
-
-  const holidays = [];
-  const invalidRecords = [];
-  const stream = Readable.from(req.file.buffer.toString());
-
-  stream
-    .pipe(csv())
-    .on('data', (data) => {
-      if (data.name && data.date) {
-        holidays.push({
-          name: data.name.trim(),
-          date: new Date(data.date.trim()),
-        });
-      } else {
-        invalidRecords.push(data);
-      }
-    })
-    .on('end', async () => {
-      if (holidays.length === 0 && invalidRecords.length === 0) {
-        return res.status(400).json({ message: "CSV file is empty or missing 'name' and 'date' columns." });
-      }
-      
-      const upsertOps = holidays.map(holiday => 
-        prisma.holiday.upsert({
-          where: { date: holiday.date },
-          update: { name: holiday.name },
-          create: { name: holiday.name, date: holiday.date },
-        })
-      );
-      
-      try {
-        await prisma.$transaction(upsertOps);
-        res.status(200).json({
-          message: `${holidays.length} holiday(s) imported successfully.`,
-          invalidRecords,
-        });
-      } catch (error) {
-        console.error("Bulk holiday import failed:", error);
-        res.status(500).json({
-          message: "An error occurred during bulk import. No holidays were added.",
-          error: error.message,
-        });
-      }
-    });
-};
-
-
-
-// ... (Other admin controller functions)
-
-/**
- * Admin generates final results for a term.
- * POST /api/admin/generate-results
- * Body: { termId: 1 }
- * Auth: ADMIN
- */
+// =============================
+// RESULTS generation
+// - This implementation sums marks for assessments within the specified term,
+//   groups by student and creates/updates Result rows (one per student per term).
+// - Accepts query/body: termId (required), programId (optional).
+// - It will compute total obtained, total max, percentage, and upsert Result.
+// =============================
 export const generateResults = async (req, res) => {
   try {
-    const { termId } = req.body;
-    if (!termId) return res.status(400).json({ message: "termId is required." });
+    const { termId, programId } = req.body || req.query;
+    if (!termId) return res.status(400).json({ message: "termId is required" });
 
-    // 1. Find all active enrollments for the given term
-    const enrollments = await prisma.enrollment.findMany({
-      where: { termId: Number(termId), status: 'ACTIVE' },
-      include: { student: true, section: true }
+    // 1) Find assessments in the term (optionally filter by program via section->program or subject->program)
+    const assessments = await prisma.assessment.findMany({
+      where: { termId: Number(termId) },
+      select: { id: true, maxMarks: true, sectionId: true, subjectId: true },
+    });
+    if (!assessments.length) {
+      return res.status(400).json({ message: "No assessments found for the term" });
+    }
+
+    const assessmentIds = assessments.map((a) => a.id);
+
+    // 2) Gather marks for these assessments
+    const marks = await prisma.mark.findMany({
+      where: { assessmentId: { in: assessmentIds } },
+      include: {
+        assessment: { select: { maxMarks: true, sectionId: true } },
+        student: { select: { id: true, programId: true } },
+      },
     });
 
-    if (enrollments.length === 0) return res.status(404).json({ message: "No active students found for this term." });
+    // Optionally filter by programId
+    const filteredMarks = programId ? marks.filter((m) => m.student.programId === Number(programId)) : marks;
 
-    // 2. Process each student
-    const resultRecords = await prisma.$transaction(
-      enrollments.map(async (enrollment) => {
-        const studentId = enrollment.studentId;
-        const programId = enrollment.section.programId;
+    // 3) Aggregate per student
+    const studentMap = new Map(); // studentId -> { obtainedSum, maxSum, termId, programId }
+    for (const m of filteredMarks) {
+      const sid = m.studentId;
+      const prev = studentMap.get(sid) || { obtainedSum: 0, maxSum: 0, studentId: sid, termId: Number(termId), programId: m.student.programId };
+      prev.obtainedSum += Number(m.marksObtained || 0);
+      prev.maxSum += Number(m.assessment?.maxMarks || 0);
+      studentMap.set(sid, prev);
+    }
 
-        // Fetch all marks for the student in this term
-        const marks = await prisma.mark.findMany({
-          where: {
-            studentId,
-            assessment: { termId: Number(termId) }
-          },
-          include: { assessment: true }
-        });
+    // 4) Upsert Results in transaction
+    const resultsToUpsert = Array.from(studentMap.values()).map((s) => {
+      const percentage = s.maxSum > 0 ? (s.obtainedSum / s.maxSum) * 100 : 0;
+      const grade = percentage >= 75 ? "A" : percentage >= 60 ? "B" : percentage >= 50 ? "C" : "F";
+      return {
+        studentId: s.studentId,
+        termId: Number(termId),
+        programId: s.programId,
+        totalMarks: Math.round(s.obtainedSum),
+        maxMarks: Math.round(s.maxSum),
+        percentage: Number(percentage.toFixed(2)),
+        grade,
+        publishedAt: new Date(),
+        breakdown: null,
+      };
+    });
 
-        // Calculate totals
-        let totalMarks = 0;
-        let maxMarks = 0;
-        const breakdown = {};
-
-        for (const mark of marks) {
-          totalMarks += mark.marksObtained;
-          maxMarks += mark.assessment.maxMarks;
-
-          const subjectCode = mark.assessment.subjectId; // Use subject ID or code
-          if (!breakdown[subjectCode]) {
-            breakdown[subjectCode] = { obtained: 0, max: 0 };
-          }
-          breakdown[subjectCode].obtained += mark.marksObtained;
-          breakdown[subjectCode].max += mark.assessment.maxMarks;
-        }
-
-        const percentage = maxMarks > 0 ? (totalMarks / maxMarks) * 100 : 0;
-        const grade = percentage >= 75 ? 'A' : percentage >= 60 ? 'B' : 'C'; // Example grading logic
-
-        // 3. Create the Result record
-        await prisma.result.upsert({
-          where: { uniq_student_term_result: { studentId, termId: Number(termId) } },
-          update: { totalMarks, maxMarks, percentage, grade, publishedAt: new Date(), breakdown },
-          create: {
-            studentId, termId: Number(termId), programId,
-            totalMarks, maxMarks, percentage, grade, publishedAt: new Date(), breakdown
-          }
-        });
-        
-        // 4. Update the student's current semester and enrollment status
-        await prisma.student.update({
-            where: { id: studentId },
-            data: { currentSemester: { increment: 1 } }
-        });
-        await prisma.enrollment.update({
-            where: { id: enrollment.id },
-            data: { status: 'COMPLETED' }
-        });
-
-        return { studentId, percentage };
+    const txOps = resultsToUpsert.map((r) =>
+      prisma.result.upsert({
+        where: { studentId_termId: { studentId: r.studentId, termId: r.termId } },
+        update: {
+          totalMarks: r.totalMarks,
+          maxMarks: r.maxMarks,
+          percentage: r.percentage,
+          grade: r.grade,
+          publishedAt: r.publishedAt,
+          breakdown: r.breakdown,
+        },
+        create: r,
       })
     );
 
-    res.status(200).json({ message: "Results generated and students promoted.", count: resultRecords.length });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error generating results", error: err.message });
+    const created = await prisma.$transaction(txOps);
+    return res.json({ message: "Results generated/updated", count: created.length, results: created });
+  } catch (e) {
+    console.error("generateResults:", e);
+    return res.status(500).json({ message: "Failed to generate results", error: e.message });
   }
+};
+
+export default {
+  uploadUsers,
+  createUser,
+  getUsers,
+  updateUser,
+  deleteUser,
+  getAllStudents,
+  getAllStaff,
+  createDepartment,
+  getDepartments,
+  createProgram,
+  getPrograms,
+  createSection,
+  getSections,
+  createTerm,
+  getTerms,
+  createSubject,
+  getSubjects,
+  getAuditLogs,
+  getIncompleteStudents,
+  getIncompleteStaff,
+  getFeedbackForStaff,
+  exportFeedbackCsv,
+  getTeacherAverageRatings,
+  createHoliday,
+  getHolidays,
+  deleteHoliday,
+  uploadHolidays,
+  generateResults,
 };
