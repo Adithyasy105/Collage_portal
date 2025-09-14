@@ -522,8 +522,6 @@ const SectionsTab = () => {
   );
 };
 
-// -------------------- TERMS --------------------
-
 const TermsTab = () => {
   const [terms, setTerms] = useState([]);
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
@@ -775,4 +773,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard; 
+export default AdminDashboard;
