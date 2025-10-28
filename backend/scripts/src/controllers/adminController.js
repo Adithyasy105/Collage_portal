@@ -582,15 +582,19 @@ export const exportFeedbackCsv = async (req, res) => {
 export const generateResults = async (req, res) => {
   try {
     const { termId, programId } = req.body || req.query;
-    if (!termId) return res.status(400).json({ message: "termId is required" });
+    if (!termId)
+      return res.status(400).json({ message: "termId is required" });
 
-    // 1) Find assessments in the term (optionally filter by program via section->program or subject->program)
+    // 1) Find assessments in the term
     const assessments = await prisma.assessment.findMany({
       where: { termId: Number(termId) },
       select: { id: true, maxMarks: true, sectionId: true, subjectId: true },
     });
+
     if (!assessments.length) {
-      return res.status(400).json({ message: "No assessments found for the term" });
+      return res
+        .status(400)
+        .json({ message: "No assessments found for the term" });
     }
 
     const assessmentIds = assessments.map((a) => a.id);
@@ -604,23 +608,40 @@ export const generateResults = async (req, res) => {
       },
     });
 
-    // Optionally filter by programId
-    const filteredMarks = programId ? marks.filter((m) => m.student.programId === Number(programId)) : marks;
+    // Optional filter by programId
+    const filteredMarks = programId
+      ? marks.filter((m) => m.student.programId === Number(programId))
+      : marks;
 
     // 3) Aggregate per student
     const studentMap = new Map(); // studentId -> { obtainedSum, maxSum, termId, programId }
     for (const m of filteredMarks) {
       const sid = m.studentId;
-      const prev = studentMap.get(sid) || { obtainedSum: 0, maxSum: 0, studentId: sid, termId: Number(termId), programId: m.student.programId };
+      const prev =
+        studentMap.get(sid) || {
+          obtainedSum: 0,
+          maxSum: 0,
+          studentId: sid,
+          termId: Number(termId),
+          programId: m.student.programId,
+        };
       prev.obtainedSum += Number(m.marksObtained || 0);
       prev.maxSum += Number(m.assessment?.maxMarks || 0);
       studentMap.set(sid, prev);
     }
 
-    // 4) Upsert Results in transaction
+    // 4) Prepare results to upsert
     const resultsToUpsert = Array.from(studentMap.values()).map((s) => {
       const percentage = s.maxSum > 0 ? (s.obtainedSum / s.maxSum) * 100 : 0;
-      const grade = percentage >= 75 ? "A" : percentage >= 60 ? "B" : percentage >= 50 ? "C" : "F";
+      const grade =
+        percentage >= 75
+          ? "A"
+          : percentage >= 60
+          ? "B"
+          : percentage >= 50
+          ? "C"
+          : "F";
+
       return {
         studentId: s.studentId,
         termId: Number(termId),
@@ -634,9 +655,15 @@ export const generateResults = async (req, res) => {
       };
     });
 
+    // 5) Upsert using correct compound unique
     const txOps = resultsToUpsert.map((r) =>
       prisma.result.upsert({
-        where: { studentId_termId: { studentId: r.studentId, termId: r.termId } },
+        where: {
+          uniq_student_term_result: {
+            studentId: r.studentId,
+            termId: r.termId,
+          },
+        },
         update: {
           totalMarks: r.totalMarks,
           maxMarks: r.maxMarks,
@@ -650,12 +677,20 @@ export const generateResults = async (req, res) => {
     );
 
     const created = await prisma.$transaction(txOps);
-    return res.json({ message: "Results generated/updated", count: created.length, results: created });
+
+    return res.json({
+      message: "Results generated/updated",
+      count: created.length,
+      results: created,
+    });
   } catch (e) {
     console.error("generateResults:", e);
-    return res.status(500).json({ message: "Failed to generate results", error: e.message });
+    return res
+      .status(500)
+      .json({ message: "Failed to generate results", error: e.message });
   }
 };
+
 
 export default {
   uploadUsers,

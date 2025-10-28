@@ -20,10 +20,17 @@ import {
   deleteHolidayApi,
   uploadHolidaysCsvApi,
   generateResultsApi,
+  getAllStaff,
 } from "../api/adminAPI";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AnalyticsView from "../components/admin/AnalyticsView";
+
+import ResultsGeneration from "../components/admin/ResultsGeneration";
+
+
+import { BarChart2 } from "lucide-react";
 
 import styles from "../styles/AdminDashboard.module.css";
 
@@ -192,8 +199,7 @@ const UsersTab = () => {
                   className={styles.btnSmallDanger}
                   onClick={() => onDelete(u.id)}
                 >
-                  Delete
-                </button>
+                  Delete</button>
               </td>
             </tr>
           ))}
@@ -342,6 +348,11 @@ const DepartmentsTab = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <input
+          placeholder="Department Code"
+          {...register("code", { required: "Code is required" })}
+        />
+        {errors.code && <span className={styles.error}>{errors.code.message}</span>}
+        <input
           placeholder="Department Name"
           {...register("name", { required: "Name is required" })}
         />
@@ -356,7 +367,8 @@ const DepartmentsTab = () => {
         {departments.length === 0 && <p>No departments found</p>}
         {departments.map((d) => (
           <div key={d.id} className={styles.card}>
-            {d.name}
+            <strong>{d.name}</strong>
+            <p>Code: {d.code}</p>
           </div>
         ))}
       </div>
@@ -395,6 +407,7 @@ const ProgramsTab = () => {
   const onSubmit = async (data) => {
     try {
       data.departmentId = Number(data.departmentId);
+      data.durationSemesters = Number(data.durationSemesters);
       await createProgramApi(data);
       toast.success("Program created");
       reset();
@@ -410,10 +423,23 @@ const ProgramsTab = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <input
+          placeholder="Program Code"
+          {...register("code", { required: "Code is required" })}
+        />
+        {errors.code && <span className={styles.error}>{errors.code.message}</span>}
+
+        <input
           placeholder="Program Name"
           {...register("name", { required: "Name is required" })}
         />
         {errors.name && <span className={styles.error}>{errors.name.message}</span>}
+
+        <input
+          placeholder="Duration (in semesters)"
+          type="number"
+          {...register("durationSemesters", { required: "Duration is required" })}
+        />
+        {errors.durationSemesters && <span className={styles.error}>{errors.durationSemesters.message}</span>}
 
         <select {...register("departmentId", { required: "Department is required" })}>
           <option value="">Select Department</option>
@@ -434,8 +460,9 @@ const ProgramsTab = () => {
         {programs.length === 0 && <p>No programs found</p>}
         {programs.map((p) => (
           <div key={p.id} className={styles.card}>
-            <strong>{p.name}</strong>
-            <p>{p.department?.name}</p>
+            <strong>{p.name} ({p.code})</strong>
+            <p>Dept: {p.department?.name}</p>
+            <p>Duration: {p.durationSemesters} semesters</p>
           </div>
         ))}
       </div>
@@ -474,6 +501,7 @@ const SectionsTab = () => {
   const onSubmit = async (data) => {
     try {
       data.programId = Number(data.programId);
+      data.semester = Number(data.semester);
       await createSectionApi(data);
       toast.success("Section created");
       reset();
@@ -493,6 +521,25 @@ const SectionsTab = () => {
           {...register("name", { required: "Name is required" })}
         />
         {errors.name && <span className={styles.error}>{errors.name.message}</span>}
+
+        <input
+          placeholder="Academic Year (e.g., 2024)"
+          {...register("academicYear", { required: "Academic Year is required" })}
+        />
+        {errors.academicYear && <span className={styles.error}>{errors.academicYear.message}</span>}
+
+        <input
+          placeholder="Semester"
+          type="number"
+          {...register("semester", { required: "Semester is required" })}
+        />
+        {errors.semester && <span className={styles.error}>{errors.semester.message}</span>}
+
+        <select {...register("shift")}>
+          <option value="">Select Shift</option>
+          <option value="MORNING">Morning</option>
+          <option value="EVENING">Evening</option>
+        </select>
 
         <select {...register("programId", { required: "Program is required" })}>
           <option value="">Select Program</option>
@@ -514,7 +561,8 @@ const SectionsTab = () => {
         {sections.map((s) => (
           <div key={s.id} className={styles.card}>
             <strong>{s.name}</strong>
-            <p>{s.program?.name}</p>
+            <p>Year: {s.academicYear}, Sem: {s.semester}</p>
+            <p>Program: {s.program?.name}</p>
           </div>
         ))}
       </div>
@@ -629,6 +677,9 @@ const SubjectsTab = () => {
   const onSubmit = async (data) => {
     try {
       data.programId = Number(data.programId);
+      data.practicalHours = Number(data.practicalHours);
+      data.theoryHours = Number(data.theoryHours);
+      data.semester = Number(data.semester);
       await createSubjectApi(data);
       toast.success("Subject created");
       reset();
@@ -644,10 +695,37 @@ const SubjectsTab = () => {
 
       <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <input
+          placeholder="Subject Code"
+          {...register("code", { required: "Code is required" })}
+        />
+        {errors.code && <span className={styles.error}>{errors.code.message}</span>}
+
+        <input
           placeholder="Subject Name"
           {...register("name", { required: "Name is required" })}
         />
         {errors.name && <span className={styles.error}>{errors.name.message}</span>}
+
+        <input
+          placeholder="Semester"
+          type="number"
+          {...register("semester", { required: "Semester is required" })}
+        />
+        {errors.semester && <span className={styles.error}>{errors.semester.message}</span>}
+
+        <input
+          placeholder="Theory Hours"
+          type="number"
+          {...register("theoryHours", { required: "Theory Hours is required" })}
+        />
+        {errors.theoryHours && <span className={styles.error}>{errors.theoryHours.message}</span>}
+
+        <input
+          placeholder="Practical Hours"
+          type="number"
+          {...register("practicalHours", { required: "Practical Hours is required" })}
+        />
+        {errors.practicalHours && <span className={styles.error}>{errors.practicalHours.message}</span>}
 
         <select {...register("programId", { required: "Program is required" })}>
           <option value="">Select Program</option>
@@ -668,67 +746,12 @@ const SubjectsTab = () => {
         {subjects.length === 0 && <p>No subjects found</p>}
         {subjects.map((s) => (
           <div key={s.id} className={styles.card}>
-            <strong>{s.name}</strong>
-            <p>{s.program?.name}</p>
+            <strong>{s.name} ({s.code})</strong>
+            <p>Program: {s.program?.name}, Sem: {s.semester}</p>
+            <p>Hours (T/P): {s.theoryHours}/{s.practicalHours}</p>
           </div>
         ))}
       </div>
-    </div>
-  );
-};
-
-const ResultsTab = () => {
-  const [terms, setTerms] = useState([]);
-  const [selectedTerm, setSelectedTerm] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const fetchTerms = async () => {
-    try {
-      const data = await getTermsApi();
-      setTerms(data);
-    } catch (e) {
-      toast.error("Failed to fetch terms");
-    }
-  };
-
-  useEffect(() => {
-    fetchTerms();
-  }, []);
-
-  const onGenerate = async () => {
-    if (!selectedTerm) {
-      toast.error("Please select a term");
-      return;
-    }
-    setLoading(true);
-    try {
-      await generateResultsApi(Number(selectedTerm));
-      toast.success("Results generated and students promoted");
-    } catch (e) {
-      toast.error(e.response?.data?.message || "Failed to generate results");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div>
-      <h2>Generate Final Results</h2>
-      <select
-        value={selectedTerm}
-        onChange={(e) => setSelectedTerm(e.target.value)}
-        className={styles.select}
-      >
-        <option value="">Select Term</option>
-        {terms.map((t) => (
-          <option key={t.id} value={t.id}>
-            {t.name} ({new Date(t.startDate).toLocaleDateString()} - {new Date(t.endDate).toLocaleDateString()})
-          </option>
-        ))}
-      </select>
-      <button onClick={onGenerate} className={styles.btnPrimary} disabled={loading}>
-        {loading ? "Generating..." : "Generate Results"}
-      </button>
     </div>
   );
 };
@@ -744,7 +767,9 @@ const AdminDashboard = () => {
     { key: "sections", label: "Sections", component: <SectionsTab /> },
     { key: "terms", label: "Terms", component: <TermsTab /> },
     { key: "subjects", label: "Subjects", component: <SubjectsTab /> },
-    { key: "results", label: "Results", component: <ResultsTab /> },
+    { key: "results", label: "Results", component: <ResultsGeneration /> },
+    { key: "analytics", label: "Analytics", component: <AnalyticsView />, Icon: BarChart2 },
+
   ];
 
   const [activeTab, setActiveTab] = useState("users");

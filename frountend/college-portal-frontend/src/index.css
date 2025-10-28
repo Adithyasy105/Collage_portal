@@ -1,4 +1,8 @@
 /* Color Palette & Fonts */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --primary-color: #005f73;
   --secondary-color: #0a9396;
