@@ -5,7 +5,7 @@ import {
   createHolidayApi,
   deleteHolidayApi,
   uploadHolidaysCsvApi,
-} from "../../api/adminAPI";
+} from "../../api/adminAPI.js";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 

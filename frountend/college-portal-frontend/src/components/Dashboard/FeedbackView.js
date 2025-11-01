@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styles from '../../styles/Dashboard.module.css';
-import { getTeachersForFeedbackApi, submitBulkFeedbackApi, getStudentTermsApi } from '../../api/studentApi';
+import { getTeachersForFeedbackApi, submitBulkFeedbackApi, getStudentTermsApi } from '../../api/studentApi.js';
 
 const FeedbackView = ({ studentProfile }) => {
   const [terms, setTerms] = useState([]);

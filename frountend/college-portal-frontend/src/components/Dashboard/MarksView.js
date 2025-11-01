@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getStudentMarksApi, getStudentTermsApi } from '../../api/studentApi';
+import { getStudentMarksApi, getStudentTermsApi } from '../../api/studentApi.js';
 import styles from '../../styles/Dashboard.module.css';
 
 const MarksView = () => {

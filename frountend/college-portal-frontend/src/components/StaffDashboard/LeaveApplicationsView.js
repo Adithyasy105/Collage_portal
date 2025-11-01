@@ -3,14 +3,13 @@ import styles from '../../styles/Dashboard.module.css';
 import { 
   getStaffLeaveApplicationsApi, 
   updateLeaveApplicationStatusApi 
-} from '../../api/leaveApi';
+} from '../../api/leaveApi.js';
 import { 
   FaFileAlt, 
   FaCheckCircle, 
   FaTimesCircle, 
   FaClock,
   FaUser,
-  FaEnvelope,
   FaGraduationCap
 } from 'react-icons/fa';
 
