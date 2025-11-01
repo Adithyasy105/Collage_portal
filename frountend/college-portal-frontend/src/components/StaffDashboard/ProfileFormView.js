@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyStaffProfile, upsertStaffProfileApi, uploadStaffProfilePhotoApi } from '../../api/staffApi.js';
+import { getMyStaffProfile, upsertStaffProfileApi, uploadStaffProfilePhotoApi } from 'api/staffApi.js';
 import styles from '../../styles/StaffDashboard.module.css';
 
 const ProfileFormView = () => {

@@ -4,7 +4,7 @@ import {
   getStudentTermsApi,
   getStudentAttendanceSummaryApi,
   getStudentAttendanceApi,
-} from "../../api/studentApi.js";
+} from "api/studentApi.js";
 import styles from "../../styles/Dashboard.module.css";
 import { 
   FaChevronDown, 

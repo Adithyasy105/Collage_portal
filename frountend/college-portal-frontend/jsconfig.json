@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
+    "paths": {
+      "api/*": ["api/*"]
+    },
     "module": "esnext",
     "target": "esnext",
     "jsx": "react-jsx",

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import styles from "../styles/Home.module.css";
 import Navbar from "../components/Navbar";
-import { createAdmissionApi } from "../api/admissionAPI.js";
-import { createContactApi } from "../api/contactAPI.js";
+import { createAdmissionApi } from "api/admissionAPI.js";
+import { createContactApi } from "api/contactAPI.js";
 import {
   FaGraduationCap,
   FaUsers,

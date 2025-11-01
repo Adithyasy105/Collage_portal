@@ -4,7 +4,7 @@ import {
   getStaffForLeaveApi, 
   submitLeaveApplicationApi, 
   getStudentLeaveApplicationsApi 
-} from '../../api/leaveApi.js';
+} from 'api/leaveApi.js';
 import { FaFileUpload, FaCalendarAlt, FaUser, FaFileAlt, FaCheckCircle, FaTimesCircle, FaClock } from 'react-icons/fa';
 
 const LeaveApplicationView = () => {

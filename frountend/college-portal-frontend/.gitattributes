@@ -1,0 +1,6 @@
+# Ensure consistent line endings and preserve file names
+* text=auto eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+
