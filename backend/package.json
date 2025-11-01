@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "postinstall": "prisma generate",
+    "migrate": "prisma migrate deploy",
+    "build": "prisma generate && prisma migrate deploy"
   },
   "keywords": [],
   "author": "",
@@ -28,10 +31,10 @@
     "multer": "^2.0.2",
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.5",
-    "twilio": "^5.8.0"
+    "twilio": "^5.8.0",
+    "prisma": "^6.18.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10",
-    "prisma": "^6.18.0"
+    "nodemon": "^3.1.10"
   }
 }
