@@ -25,13 +25,11 @@ const app = express();
 // CORS configuration
 const corsOptions = {
   origin: [
-    "http://localhost:3000",
-    "https://collage-portal-h9kw84t0h-adithyasy105s-projects.vercel.app",
-    "https://collage-portal-r5j6.onrender.com",
-    "https://collage-portal-h9kw84t0h-adithyasy105s-projects.vercel.app",
-    "https://collage-portal-5sh1rnifb-adithyasy105s-projects.vercel.app/",
-    "https://collage-portal-sigma.vercel.app/",
-    process.env.FRONTEND_URL
+    "http://localhost:3000", // Local development
+    "https://collage-portal-h9kw84t0h-adithyasy105s-projects.vercel.app", // Vercel production
+    "https://collage-portal-5sh1rnifb-adithyasy105s-projects.vercel.app", // Vercel preview
+    "https://collage-portal-sigma.vercel.app", // Vercel custom domain
+    process.env.FRONTEND_URL // Environment variable override
   ].filter(Boolean), // Remove any undefined values
   credentials: true,
   optionsSuccessStatus: 200
