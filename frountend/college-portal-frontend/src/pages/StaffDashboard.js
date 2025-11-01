@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyStaffProfile, getStaffDashboardData } from 'api/staffApi.js';
+import { getMyStaffProfile, getStaffDashboardData } from '../api/staffApi.js';
 import StaffSidebar from '../components/StaffDashboard/StaffSidebar';
 import StaffProfileHeader from '../components/StaffDashboard/StaffProfileHeader';
 import StaffProfileView from '../components/StaffDashboard/ProfileView';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { resetPasswordApi } from 'api/authApi.js';
+import { resetPasswordApi } from '../api/authApi.js';
 import AuthForm from '../components/AuthForm';
 import styles from '../styles/Auth.module.css';
 

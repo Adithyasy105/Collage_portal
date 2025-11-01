@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { upsertStudentProfileApi, getMyStudentProfile, uploadProfilePhotoApi } from 'api/studentApi.js';
+import { upsertStudentProfileApi, getMyStudentProfile, uploadProfilePhotoApi } from '../../api/studentApi.js';
 import styles from '../../styles/ProfileFormView.module.css';
 
 const GENDER_OPTIONS = ['MALE', 'FEMALE', 'OTHER'];

@@ -6,7 +6,7 @@ import {
   getSectionStudentsApi,
   markAttendanceApi,
   getMySessionsApi,
-} from "api/staffApi.js";
+} from "../../api/staffApi.js";
 
 const AttendanceUploadView = ({ assignments }) => {
   const [sessionForm, setSessionForm] = useState({

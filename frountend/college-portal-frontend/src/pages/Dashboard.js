@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyStudentProfile, getStudentDashboardData } from 'api/studentApi.js';
+import { getMyStudentProfile, getStudentDashboardData } from '../api/studentApi.js';
 import Sidebar from '../components/Dashboard/Sidebar';
 import ProfileHeader from '../components/Dashboard/ProfileHeader';
 import ProfileView from '../components/Dashboard/ProfileView';

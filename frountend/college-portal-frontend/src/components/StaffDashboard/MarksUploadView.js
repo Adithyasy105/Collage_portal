@@ -6,7 +6,7 @@ import {
   uploadMarksCsvApi,
   createAssessment,
   getStaffAssignments,
-} from "api/staffApi.js";
+} from "../../api/staffApi.js";
 import styles from "../../styles/MarksUpload.module.css";
 
 const MarksUpload = () => {
