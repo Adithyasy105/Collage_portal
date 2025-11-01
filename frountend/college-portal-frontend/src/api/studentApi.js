@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { API_URLS } from '../config/api.js';
 
-const API_URL = 'http://localhost:5000/api/students';
-const MARKS_API_URL = 'http://localhost:5000/api/marks';
-const ATTENDANCE_API_URL = 'http://localhost:5000/api/attendance';
+const API_URL = API_URLS.STUDENTS;
+const MARKS_API_URL = API_URLS.MARKS;
+const ATTENDANCE_API_URL = API_URLS.ATTENDANCE;
 
 const getHeaders = () => ({
   headers: {

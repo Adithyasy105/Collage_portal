@@ -22,7 +22,17 @@ import { startAttendanceAlertJob } from "./scripts/src/jobs/attendanceAlerts.js"
 const app = express();
 
 // --- Middleware ---
-app.use(cors()); // allow CORS, configure origins in production
+// CORS configuration
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "https://collage-portal-h9kw84t0h-adithyasy105s-projects.vercel.app",
+    process.env.FRONTEND_URL
+  ].filter(Boolean), // Remove any undefined values
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 app.use(helmet());
 app.use(express.json({ limit: "10mb" })); // parse JSON
 app.use(express.urlencoded({ extended: true, limit: "10mb" })); // parse form data

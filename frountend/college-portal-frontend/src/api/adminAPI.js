@@ -1,6 +1,7 @@
 import axios from "axios";
+import { API_URLS } from '../config/api.js';
 
-const ADMIN_API_URL = "http://localhost:5000/api/admin";
+const ADMIN_API_URL = API_URLS.ADMIN;
 
 const getHeaders = () => ({
   headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
