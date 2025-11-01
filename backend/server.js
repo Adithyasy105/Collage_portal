@@ -5,6 +5,10 @@ import cors from "cors";
 import morgan from "morgan";
 import helmet from "helmet";
 
+console.log("✅ DATABASE_URL loaded?", !!process.env.DATABASE_URL);
+console.log("🔍 DATABASE_URL value:", process.env.DATABASE_URL?.slice(0, 40) + "...");
+
+
 // Routes (adjust paths if your files live elsewhere)
 import authRoutes from "./scripts/src/routes/authRoutes.js";
 import studentRoutes from "./scripts/src/routes/studentRoutes.js";
