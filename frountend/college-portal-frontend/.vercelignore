@@ -1,0 +1,3 @@
+# Vercel ignore file - ensure all source files are included
+!src/api/*.js
+
