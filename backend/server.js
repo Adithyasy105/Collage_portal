@@ -27,6 +27,9 @@ const corsOptions = {
   origin: [
     "http://localhost:3000",
     "https://collage-portal-h9kw84t0h-adithyasy105s-projects.vercel.app",
+    "https://collage-portal-r5j6.onrender.com",
+    "https://collage-portal-h9kw84t0h-adithyasy105s-projects.vercel.app",
+    "https://collage-portal-5sh1rnifb-adithyasy105s-projects.vercel.app/",
     process.env.FRONTEND_URL
   ].filter(Boolean), // Remove any undefined values
   credentials: true,
