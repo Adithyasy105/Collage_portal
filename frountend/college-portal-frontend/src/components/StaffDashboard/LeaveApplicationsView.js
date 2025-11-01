@@ -3,7 +3,7 @@ import styles from '../../styles/Dashboard.module.css';
 import { 
   getStaffLeaveApplicationsApi, 
   updateLeaveApplicationStatusApi 
-} from '../../api/leaveApi.js';
+} from '../../api/leaveApi';
 import { 
   FaFileAlt, 
   FaCheckCircle, 

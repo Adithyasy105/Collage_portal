@@ -6,7 +6,7 @@ import {
   updateUserApi,
   deleteUserApi,
   uploadUsersCsvApi,
-} from "../../api/adminAPI.js";
+} from "../../api/adminAPI";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 

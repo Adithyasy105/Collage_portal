@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { getTermsApi, generateResultsApi } from "../../api/adminAPI.js";
+import { getTermsApi, generateResultsApi } from "../../api/adminAPI";
 import { toast } from "react-toastify";
 import {
   BarChart,
