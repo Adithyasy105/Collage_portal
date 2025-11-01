@@ -15,6 +15,7 @@ import marksRoutes from "./scripts/src/routes/marksRoutes.js";
 
 import admissionRoutes from "./scripts/src/routes/admissionRoutes.js";
 import contactRoutes from "./scripts/src/routes/contactRoutes.js";
+import leaveRoutes from "./scripts/src/routes/leaveRoutes.js";
 
 import { startAttendanceAlertJob } from "./scripts/src/jobs/attendanceAlerts.js"; // <-- NEW
 
@@ -41,6 +42,7 @@ app.use("/api/marks", marksRoutes); // marks endpoints (if separate)
 // Routes
 app.use("/api/admissions", admissionRoutes);
 app.use("/api/contacts", contactRoutes);
+app.use("/api/leave", leaveRoutes);
 
 startAttendanceAlertJob()
 

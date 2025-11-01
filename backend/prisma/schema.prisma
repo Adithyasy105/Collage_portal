@@ -51,6 +51,7 @@ model Student {
   marks           Mark[]
   messages        MessageLog[]
   results         Result[]
+  leaveApplications LeaveApplication[]
   program         Program      @relation(fields: [programId], references: [id])
   section         Section?     @relation(fields: [sectionId], references: [id])
   user            User?        @relation(fields: [userId], references: [id])
@@ -71,6 +72,7 @@ model Staff {
   auditLogs          AuditLog[]        @relation("AuditOnStaff")
   sessionsTaken      ClassSession[]    @relation("SessionTakenBy")
   feedbacks          Feedback[]        @relation("FeedbackToStaff")
+  leaveApplications  LeaveApplication[]
   department         Department        @relation(fields: [departmentId], references: [id])
   user               User?             @relation(fields: [userId], references: [id])
   assignments        StaffAssignment[]
@@ -459,4 +461,30 @@ enum Category {
   OBC
   SC
   ST
+}
+
+/// *
+///  * =========================
+///  * Leave Applications
+///  * =========================
+model LeaveApplication {
+  id              Int                @id @default(autoincrement())
+  studentId       Int
+  staffId         Int
+  startDate       DateTime
+  endDate         DateTime
+  reason          String
+  letterUrl       String?
+  status          LeaveStatus        @default(PENDING)
+  staffComments   String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  student         Student            @relation(fields: [studentId], references: [id])
+  staff           Staff              @relation(fields: [staffId], references: [id])
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

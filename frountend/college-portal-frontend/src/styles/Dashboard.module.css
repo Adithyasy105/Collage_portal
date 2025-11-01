@@ -787,3 +787,1012 @@ body {
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
+
+/* ============================================
+   Leave Application Styles
+   ============================================ */
+
+.leaveApplicationContainer {
+  padding: 2rem;
+  background-color: var(--bg-light);
+  border-radius: 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+/* Tabs */
+.leaveTabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.leaveTab {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: var(--text-light);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.leaveTab:hover {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+.leaveTab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+/* Form Styles */
+.leaveForm {
+  background-color: var(--card-bg);
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  max-width: 800px;
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.formGroup label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.formIcon {
+  color: var(--primary-color);
+}
+
+.required {
+  color: var(--error-color);
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.formInput,
+.formTextarea,
+.formSelect {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+.formInput:focus,
+.formTextarea:focus,
+.formSelect:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(0, 77, 156, 0.1);
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.formFileInput {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+}
+
+.formFileInput:hover {
+  border-color: var(--primary-color);
+  background-color: #f1faff;
+}
+
+.fileInfo {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: #e8f5e9;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--success-color);
+}
+
+.submitButton {
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 77, 156, 0.3);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Applications List */
+.applicationsList {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.applicationsTable {
+  overflow-x: auto;
+}
+
+.applicationsTable table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.applicationsTable thead {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.applicationsTable th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.applicationsTable td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.95rem;
+}
+
+.applicationsTable tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.applicationsTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.teacherInfo,
+.studentInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.teacherInfo strong,
+.studentInfo strong {
+  display: block;
+  color: var(--text-color);
+  margin-bottom: 0.25rem;
+}
+
+.teacherInfo span,
+.studentInfo span {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.studentIcon,
+.programIcon {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+}
+
+.programInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reasonCell {
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+.commentsCell {
+  max-width: 250px;
+  word-wrap: break-word;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+/* Status Badges */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statusBadgePending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.statusBadgeApproved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.statusBadgeRejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.statusIconPending {
+  color: #856404;
+}
+
+.statusIconApproved {
+  color: #155724;
+}
+
+.statusIconRejected {
+  color: #721c24;
+}
+
+/* View Letter Link */
+.viewLetterLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  background-color: #f1faff;
+}
+
+.viewLetterLink:hover {
+  background-color: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.noLetter {
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionButton {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.actionButton:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.commentsDisplay {
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.commentsText {
+  display: block;
+  max-width: 200px;
+  word-wrap: break-word;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modalContent {
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.modalHeader h3 {
+  margin: 0;
+  color: var(--primary-color);
+  font-size: 1.5rem;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--text-light);
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+.modalClose:hover {
+  color: var(--error-color);
+}
+
+.modalBody {
+  padding: 1.5rem;
+}
+
+.modalSection {
+  margin-bottom: 1.5rem;
+}
+
+.modalSection h4 {
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.modalSection p {
+  margin: 0.5rem 0;
+  color: var(--text-color);
+}
+
+.modalActions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--border-color);
+}
+
+.modalButton {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.approveButton {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.approveButton:hover:not(:disabled) {
+  background-color: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.rejectButton {
+  background-color: var(--error-color);
+  color: white;
+}
+
+.rejectButton:hover:not(:disabled) {
+  background-color: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.cancelButton {
+  background-color: var(--text-light);
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #5a6268;
+}
+
+.modalButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Messages */
+.errorMessage,
+.successMessage {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.errorMessage {
+  background-color: #f8d7da;
+  color: var(--error-color);
+  border: 1px solid #f5c6cb;
+}
+
+.successMessage {
+  background-color: #d4edda;
+  color: var(--success-color);
+  border: 1px solid #c3e6cb;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-light);
+}
+
+/* ============================================
+   Enhanced Attendance View Styles
+   ============================================ */
+
+.attendanceContainer {
+  padding: 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.overallAttendanceCard {
+  background-color:#dcedef;
+  color:var(--primary-color);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(199, 203, 207, 0.2);
+}
+
+.overallAttendance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.overallLabel {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.overallPercent {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.attendanceGood {
+  color: #28a745;
+}
+
+.attendanceLow {
+  color: #dc3545;
+}
+
+.attendanceSubjectsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.attendanceSubjectCard {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.attendanceSubjectCard:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.subjectCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.subjectCardHeader:hover {
+  background-color: var(--bg-light);
+}
+
+.subjectHeaderContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.subjectInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.subjectName {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin: 0;
+}
+
+.subjectCode {
+  font-size: 0.9rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.subjectStats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.expandButton {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.subjectCardHeader:hover .expandButton {
+  transform: scale(1.1);
+}
+
+.subjectDetails {
+  padding: 0;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+  }
+}
+
+.loadingDetails {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-light);
+}
+
+.attendanceRecordsTable {
+  overflow-x: auto;
+  padding: 1.5rem;
+}
+
+.attendanceRecordsTable table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.attendanceRecordsTable thead {
+  background-color: var(--bg-light);
+  border-bottom: 2px solid var(--primary-color);
+}
+
+.attendanceRecordsTable th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.attendanceRecordsTable td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.attendanceRecordsTable tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.attendanceRecordsTable tbody tr:hover {
+  background-color: var(--bg-light);
+}
+
+.attendanceRecordsTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.dateCell,
+.timeCell,
+.teacherCell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dateIcon,
+.timeIcon,
+.teacherIcon {
+  color: var(--primary-color);
+  font-size: 0.9rem;
+}
+
+.teacherDesignation {
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin-left: 0.5rem;
+}
+
+.attendanceStatusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.attendanceBadgePresent {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.attendanceBadgeAbsent {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.attendanceBadgeLate {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.attendanceBadgeExcused {
+  background-color: #d1ecf1;
+  color: #0c5460;
+}
+
+.attendanceStatusPresent {
+  color: #28a745;
+}
+
+.attendanceStatusAbsent {
+  color: #dc3545;
+}
+
+.attendanceStatusLate {
+  color: #ffc107;
+}
+
+.attendanceStatusExcused {
+  color: #17a2b8;
+}
+
+.noRecords {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-light);
+  font-style: italic;
+}
+
+/* Responsive Design for Attendance View */
+@media (max-width: 1024px) {
+  .attendanceContainer {
+    padding: 1rem;
+  }
+
+  .subjectHeaderContent {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .subjectStats {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .attendanceRecordsTable {
+    padding: 1rem;
+  }
+
+  .attendanceRecordsTable table {
+    font-size: 0.85rem;
+  }
+
+  .attendanceRecordsTable th,
+  .attendanceRecordsTable td {
+    padding: 0.75rem 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .attendanceContainer {
+    padding: 0.5rem;
+  }
+
+  .overallAttendanceCard {
+    padding: 1rem;
+  }
+
+  .overallAttendance {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .overallLabel {
+    font-size: 1rem;
+  }
+
+  .overallPercent {
+    font-size: 1.8rem;
+  }
+
+  .subjectCardHeader {
+    padding: 1rem;
+  }
+
+  .subjectName {
+    font-size: 1.1rem;
+  }
+
+  .subjectCode {
+    font-size: 0.85rem;
+  }
+
+  .attendancePercent {
+    font-size: 1.5rem;
+  }
+
+  .attendanceRecordsTable {
+    padding: 0.5rem;
+  }
+
+  /* Make table scrollable on mobile */
+  .attendanceRecordsTable {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .attendanceRecordsTable table {
+    min-width: 700px; /* Minimum width to prevent cramping */
+    font-size: 0.8rem;
+  }
+
+  .attendanceRecordsTable th,
+  .attendanceRecordsTable td {
+    padding: 0.6rem 0.4rem;
+    white-space: nowrap;
+  }
+
+  .dateCell,
+  .timeCell,
+  .teacherCell {
+    gap: 0.3rem;
+  }
+
+  .dateIcon,
+  .timeIcon,
+  .teacherIcon {
+    font-size: 0.8rem;
+  }
+
+  .attendanceStatusBadge {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .teacherDesignation {
+    display: block;
+    margin-left: 0;
+    margin-top: 0.2rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .viewTitle {
+    font-size: 1.4rem;
+  }
+
+  .subjectCardHeader {
+    padding: 0.75rem;
+  }
+
+  .subjectName {
+    font-size: 1rem;
+  }
+
+  .attendanceRecordsTable table {
+    min-width: 600px;
+    font-size: 0.75rem;
+  }
+
+  .attendanceRecordsTable th {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.3rem;
+  }
+
+  .attendanceRecordsTable td {
+    padding: 0.5rem 0.3rem;
+  }
+}
+
+.noApplications {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-light);
+  font-size: 1.1rem;
+}
+
+/* Responsive Styles for Leave Applications */
+@media (max-width: 768px) {
+  .leaveApplicationContainer {
+    padding: 1rem;
+  }
+
+  .leaveTabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .leaveTab {
+    width: 100%;
+    text-align: left;
+    border-bottom: 2px solid transparent;
+    border-left: 3px solid transparent;
+  }
+
+  .leaveTab.active {
+    border-left-color: var(--primary-color);
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .applicationsTable {
+    font-size: 0.85rem;
+  }
+
+  .applicationsTable th,
+  .applicationsTable td {
+    padding: 0.5rem;
+  }
+
+  .applicationsTable {
+    overflow-x: auto;
+    display: block;
+  }
+
+  .applicationsTable table {
+    min-width: 800px;
+  }
+
+  .modalContent {
+    margin: 1rem;
+    max-height: 85vh;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .modalButton {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .sectionTitle {
+    font-size: 1.5rem;
+  }
+
+  .leaveForm {
+    padding: 1rem;
+  }
+
+  .applicationsTable table {
+    min-width: 700px;
+  }
+
+  .teacherInfo,
+  .studentInfo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

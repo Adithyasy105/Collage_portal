@@ -8,6 +8,7 @@ import ProfileFormView from '../components/Dashboard/ProfileFormView';
 import MarksView from '../components/Dashboard/MarksView';
 import AttendanceView from '../components/Dashboard/AttendanceView';
 import FeedbackView from '../components/Dashboard/FeedbackView';
+import LeaveApplicationView from '../components/Dashboard/LeaveApplicationView';
 import styles from '../styles/Dashboard.module.css';
 
 const Dashboard = () => {
@@ -73,8 +74,9 @@ const Dashboard = () => {
         <div className={styles.contentArea}>
           {activeTab === 'profile' && <ProfileView profile={studentProfile} />}
           {activeTab === 'marks' && <MarksView marksSummary={dashboardData?.marksSummary} />}
-          {activeTab === 'attendance' && <AttendanceView attendanceSummary={dashboardData?.attendanceSummary} overallAttendancePercent={dashboardData?.overallAttendancePercent} />}
+          {activeTab === 'attendance' && <AttendanceView />}
           {activeTab === 'feedback' && <FeedbackView studentProfile={studentProfile} />}
+          {activeTab === 'leave' && <LeaveApplicationView />}
         </div>
       </div>
     </div>

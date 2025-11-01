@@ -8,6 +8,7 @@ import ProfileFormView from '../components/StaffDashboard/ProfileFormView';
 import AttendanceUploadView from '../components/StaffDashboard/AttendanceUploadView';
 import MarksUploadView from '../components/StaffDashboard/MarksUploadView';
 import FeedbackView from '../components/StaffDashboard/FeedbackView';
+import LeaveApplicationsView from '../components/StaffDashboard/LeaveApplicationsView';
 import styles from '../styles/StaffDashboard.module.css';
 
 const StaffDashboard = () => {
@@ -72,6 +73,7 @@ const StaffDashboard = () => {
           {activeTab === 'attendance' && <AttendanceUploadView assignments={dashboardData.assignments} />}
           {activeTab === 'marks' && <MarksUploadView assignments={dashboardData.assignments} />}
           {activeTab === 'feedback' && <FeedbackView />}
+          {activeTab === 'leave' && <LeaveApplicationsView />}
         </div>
       </div>
     </div>

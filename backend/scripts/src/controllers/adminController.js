@@ -191,6 +191,25 @@ export const getHolidays = async (req, res) => {
   }
 };
 
+export const updateHoliday = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, date } = req.body;
+    
+    const updated = await prisma.holiday.update({
+      where: { id: Number(id) },
+      data: {
+        name,
+        date: new Date(date),
+      },
+    });
+    return res.json(updated);
+  } catch (e) {
+    console.error("updateHoliday:", e);
+    return res.status(400).json({ message: "Failed to update holiday", error: e.message });
+  }
+};
+
 export const deleteHoliday = async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -253,6 +272,34 @@ export const getDepartments = async (req, res) => {
   }
 };
 
+export const updateDepartment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { code, name } = req.body;
+    
+    const updated = await prisma.department.update({
+      where: { id: Number(id) },
+      data: { code, name },
+      include: { programs: true, staff: true },
+    });
+    return res.json(updated);
+  } catch (e) {
+    console.error("updateDepartment:", e);
+    return res.status(400).json({ message: "Failed to update department", error: e.message });
+  }
+};
+
+export const deleteDepartment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.department.delete({ where: { id: Number(id) } });
+    return res.json({ message: "Department deleted successfully" });
+  } catch (e) {
+    console.error("deleteDepartment:", e);
+    return res.status(400).json({ message: "Failed to delete department", error: e.message });
+  }
+};
+
 export const createProgram = async (req, res) => {
   try {
     const prog = await prisma.program.create({ data: req.body });
@@ -273,6 +320,39 @@ export const getPrograms = async (req, res) => {
   }
 };
 
+export const updateProgram = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { code, name, durationSemesters, departmentId } = req.body;
+    
+    const updated = await prisma.program.update({
+      where: { id: Number(id) },
+      data: {
+        code,
+        name,
+        durationSemesters: Number(durationSemesters),
+        departmentId: Number(departmentId),
+      },
+      include: { department: true },
+    });
+    return res.json(updated);
+  } catch (e) {
+    console.error("updateProgram:", e);
+    return res.status(400).json({ message: "Failed to update program", error: e.message });
+  }
+};
+
+export const deleteProgram = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.program.delete({ where: { id: Number(id) } });
+    return res.json({ message: "Program deleted successfully" });
+  } catch (e) {
+    console.error("deleteProgram:", e);
+    return res.status(400).json({ message: "Failed to delete program", error: e.message });
+  }
+};
+
 export const createSection = async (req, res) => {
   try {
     const sec = await prisma.section.create({ data: req.body });
@@ -290,6 +370,40 @@ export const getSections = async (req, res) => {
   } catch (e) {
     console.error("getSections:", e);
     return res.status(500).json({ message: "Failed to fetch sections", error: e.message });
+  }
+};
+
+export const updateSection = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, academicYear, semester, shift, programId } = req.body;
+    
+    const updated = await prisma.section.update({
+      where: { id: Number(id) },
+      data: {
+        name,
+        academicYear,
+        semester: Number(semester),
+        shift: shift || null,
+        programId: Number(programId),
+      },
+      include: { program: true },
+    });
+    return res.json(updated);
+  } catch (e) {
+    console.error("updateSection:", e);
+    return res.status(400).json({ message: "Failed to update section", error: e.message });
+  }
+};
+
+export const deleteSection = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.section.delete({ where: { id: Number(id) } });
+    return res.json({ message: "Section deleted successfully" });
+  } catch (e) {
+    console.error("deleteSection:", e);
+    return res.status(400).json({ message: "Failed to delete section", error: e.message });
   }
 };
 
@@ -320,6 +434,37 @@ export const getTerms = async (req, res) => {
   }
 };
 
+export const updateTerm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, startDate, endDate } = req.body;
+    
+    const updated = await prisma.academicTerm.update({
+      where: { id: Number(id) },
+      data: {
+        name,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+      },
+    });
+    return res.json(updated);
+  } catch (e) {
+    console.error("updateTerm:", e);
+    return res.status(400).json({ message: "Failed to update term", error: e.message });
+  }
+};
+
+export const deleteTerm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.academicTerm.delete({ where: { id: Number(id) } });
+    return res.json({ message: "Term deleted successfully" });
+  } catch (e) {
+    console.error("deleteTerm:", e);
+    return res.status(400).json({ message: "Failed to delete term", error: e.message });
+  }
+};
+
 export const createSubject = async (req, res) => {
   try {
     const subj = await prisma.subject.create({ data: req.body });
@@ -337,6 +482,41 @@ export const getSubjects = async (req, res) => {
   } catch (e) {
     console.error("getSubjects:", e);
     return res.status(500).json({ message: "Failed to fetch subjects", error: e.message });
+  }
+};
+
+export const updateSubject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { code, name, semester, theoryHours, practicalHours, programId } = req.body;
+    
+    const updated = await prisma.subject.update({
+      where: { id: Number(id) },
+      data: {
+        code,
+        name,
+        semester: Number(semester),
+        theoryHours: Number(theoryHours),
+        practicalHours: Number(practicalHours),
+        programId: Number(programId),
+      },
+      include: { program: true },
+    });
+    return res.json(updated);
+  } catch (e) {
+    console.error("updateSubject:", e);
+    return res.status(400).json({ message: "Failed to update subject", error: e.message });
+  }
+};
+
+export const deleteSubject = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await prisma.subject.delete({ where: { id: Number(id) } });
+    return res.json({ message: "Subject deleted successfully" });
+  } catch (e) {
+    console.error("deleteSubject:", e);
+    return res.status(400).json({ message: "Failed to delete subject", error: e.message });
   }
 };
 
@@ -691,6 +871,286 @@ export const generateResults = async (req, res) => {
   }
 };
 
+// =============================
+// STAFF ASSIGNMENTS
+// =============================
+export const getStaffAssignments = async (req, res) => {
+  try {
+    const assignments = await prisma.staffAssignment.findMany({
+      include: {
+        staff: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            department: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        subject: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        section: {
+          select: {
+            id: true,
+            name: true,
+            academicYear: true,
+            program: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        term: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+      orderBy: [
+        { termId: "desc" },
+        { sectionId: "asc" },
+        { subjectId: "asc" },
+      ],
+    });
+
+    return res.json(assignments);
+  } catch (e) {
+    console.error("getStaffAssignments:", e);
+    return res.status(500).json({ message: "Failed to fetch assignments", error: e.message });
+  }
+};
+
+export const createStaffAssignment = async (req, res) => {
+  try {
+    const { staffId, subjectId, sectionId, termId, active = true, id } = req.body;
+
+    // Explicitly remove id if present to prevent auto-increment conflicts
+    if (id !== undefined) {
+      console.warn("ID field provided in request body, ignoring it for auto-increment");
+    }
+
+    if (!staffId || !subjectId || !sectionId || !termId) {
+      return res.status(400).json({ message: "staffId, subjectId, sectionId, and termId are required." });
+    }
+
+    // Check if assignment already exists
+    const existing = await prisma.staffAssignment.findUnique({
+      where: {
+        uniq_assignment: {
+          staffId: Number(staffId),
+          subjectId: Number(subjectId),
+          sectionId: Number(sectionId),
+          termId: Number(termId),
+        },
+      },
+    });
+
+    if (existing) {
+      return res.status(409).json({ message: "This assignment already exists." });
+    }
+
+    // Create without id field - let Prisma auto-generate it
+    const assignment = await prisma.staffAssignment.create({
+      data: {
+        staffId: Number(staffId),
+        subjectId: Number(subjectId),
+        sectionId: Number(sectionId),
+        termId: Number(termId),
+        active: active === true || active === "true",
+        // Explicitly do NOT include id - let database auto-increment handle it
+      },
+      include: {
+        staff: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            department: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        subject: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        section: {
+          select: {
+            id: true,
+            name: true,
+            academicYear: true,
+            program: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        term: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return res.status(201).json(assignment);
+  } catch (e) {
+    console.error("createStaffAssignment:", e);
+    
+    // Handle specific Prisma errors
+    if (e.code === 'P2002') {
+      if (e.meta?.target?.includes('id')) {
+        return res.status(500).json({ 
+          message: "Database sequence error. Please contact administrator to reset the StaffAssignment ID sequence.",
+          error: "ID sequence is out of sync with existing data",
+          code: e.code
+        });
+      } else {
+        // This is the compound unique constraint
+        return res.status(409).json({ 
+          message: "This assignment already exists.",
+          error: e.message,
+          code: e.code
+        });
+      }
+    }
+    
+    return res.status(400).json({ message: "Failed to create assignment", error: e.message, code: e.code });
+  }
+};
+
+export const updateStaffAssignment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { active } = req.body;
+
+    const assignment = await prisma.staffAssignment.update({
+      where: { id: Number(id) },
+      data: {
+        active: active === true || active === "true",
+      },
+      include: {
+        staff: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            department: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        subject: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+          },
+        },
+        section: {
+          select: {
+            id: true,
+            name: true,
+            academicYear: true,
+            program: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+        term: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    return res.json(assignment);
+  } catch (e) {
+    console.error("updateStaffAssignment:", e);
+    return res.status(400).json({ message: "Failed to update assignment", error: e.message });
+  }
+};
+
+export const deleteStaffAssignment = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await prisma.staffAssignment.delete({
+      where: { id: Number(id) },
+    });
+
+    return res.json({ message: "Assignment deleted successfully." });
+  } catch (e) {
+    console.error("deleteStaffAssignment:", e);
+    return res.status(400).json({ message: "Failed to delete assignment", error: e.message });
+  }
+};
+
+// Fix sequence for StaffAssignment table
+export const fixStaffAssignmentSequence = async (req, res) => {
+  try {
+    // Get the max ID from the table
+    const maxIdResult = await prisma.$queryRaw`
+      SELECT COALESCE(MAX(id), 0) as max_id FROM "StaffAssignment"
+    `;
+    
+    const maxId = maxIdResult[0]?.max_id || 0;
+    const nextId = Number(maxId) + 1;
+
+    // Reset the sequence to the next available ID
+    await prisma.$executeRaw`
+      SELECT setval(pg_get_serial_sequence('"StaffAssignment"', 'id'), ${nextId}, true)
+    `;
+
+    return res.json({ 
+      message: "Sequence fixed successfully",
+      maxId: maxId,
+      nextId: nextId
+    });
+  } catch (e) {
+    console.error("fixStaffAssignmentSequence:", e);
+    return res.status(500).json({ 
+      message: "Failed to fix sequence", 
+      error: e.message 
+    });
+  }
+};
+
 
 export default {
   uploadUsers,
@@ -718,7 +1178,23 @@ export default {
   getTeacherAverageRatings,
   createHoliday,
   getHolidays,
+  updateHoliday,
   deleteHoliday,
   uploadHolidays,
   generateResults,
+  getStaffAssignments,
+  createStaffAssignment,
+  updateStaffAssignment,
+  deleteStaffAssignment,
+  fixStaffAssignmentSequence,
+  updateDepartment,
+  deleteDepartment,
+  updateProgram,
+  deleteProgram,
+  updateSection,
+  deleteSection,
+  updateTerm,
+  deleteTerm,
+  updateSubject,
+  deleteSubject,
 };

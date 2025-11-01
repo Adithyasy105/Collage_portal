@@ -285,12 +285,31 @@ export const viewAttendance = async (req, res) => {
           select: {
             id: true,
             scheduledAt: true,
+            durationMin: true,
+            room: true,
             section: { select: { name: true, academicYear: true } },
             term: { select: { id: true, name: true } },
+            takenBy: {
+              select: {
+                id: true,
+                employeeId: true,
+                designation: true,
+                user: {
+                  select: {
+                    name: true,
+                    email: true
+                  }
+                }
+              }
+            }
           },
         },
       },
-      orderBy: { markedAt: "desc" },
+      orderBy: { 
+        session: {
+          scheduledAt: "desc"
+        }
+      },
     });
 
     res.json(records);

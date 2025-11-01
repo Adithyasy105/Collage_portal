@@ -6,6 +6,7 @@ import {
   FaComments,
   FaBars,
   FaTimes,
+  FaFileAlt,
 } from "react-icons/fa";
 import styles from "../../styles/Dashboard.module.css";
 
@@ -14,6 +15,7 @@ const navItems = [
   { id: "attendance", label: "Attendance", icon: <FaClipboardList /> },
   { id: "marks", label: "Marks", icon: <FaChartBar /> },
   { id: "feedback", label: "Feedback", icon: <FaComments /> },
+  { id: "leave", label: "Leave Application", icon: <FaFileAlt /> },
 ];
 
 const Sidebar = ({ setActiveTab, activeTab }) => {

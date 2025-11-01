@@ -10,6 +10,7 @@ import ProfileFormView from "./components/Dashboard/ProfileFormView";
 import SProfileFormView from "./components/StaffDashboard/ProfileFormView";
 import StaffDashboard from "./pages/StaffDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import Tools from "./pages/Tools";
 import "./styles.css";
 
 const ProtectedRoute = ({ children }) => {
@@ -50,6 +51,14 @@ function App() {
         element={
           <PublicLayout>
             <ResetPassword />
+          </PublicLayout>
+        }
+      />
+      <Route
+        path="/tools"
+        element={
+          <PublicLayout>
+            <Tools />
           </PublicLayout>
         }
       />

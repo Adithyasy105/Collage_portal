@@ -113,6 +113,15 @@ const Navbar = () => {
             >
               Contact
             </button>
+            <button
+              className={styles.navLink}
+              onClick={() => {
+                navigate("/tools");
+                setMobileMenuOpen(false);
+              }}
+            >
+              Tools
+            </button>
           </nav>
 
           <button

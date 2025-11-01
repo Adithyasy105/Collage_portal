@@ -1,0 +1,364 @@
+/* Root Color Palette & Fonts - Matching Home.module.css */
+:root {
+  --color-primary: #004d9c;
+  --color-primary-dark: #003387;
+  --color-primary-light: #0065ff;
+  --color-secondary: #f0a301;
+  --color-secondary-dark: #cc8700;
+  --color-secondary-light: #ffd65b;
+  --color-bg-light: #f7f9fc;
+  --color-bg-dark: #2c3e50;
+  --color-text: #222;
+  --color-text-muted: #555;
+  --color-text-light: #777;
+  --color-white: #fff;
+
+  --font-sans: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --font-heading: 'Poppins', 'Segoe UI', sans-serif;
+
+  --transition-speed: 0.3s;
+  --border-radius: 12px;
+  --shadow-light: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-strong: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Hero Section */
+.hero {
+  position: relative;
+  width: 100%;
+  min-height: 60vh;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-white);
+  padding: 120px 20px 80px;
+  margin-top: 70px;
+}
+
+.heroContent {
+  max-width: 900px;
+  animation: fadeUp 1.5s ease-in-out;
+}
+
+.hero h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 900;
+  margin-bottom: 1.2rem;
+  line-height: 1.1;
+  background: linear-gradient(90deg, #ffc400, #ffffff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 0.05em;
+}
+
+.hero p {
+  font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+  margin-bottom: 2rem;
+  color: var(--color-secondary-light);
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Tools Section */
+.toolsSection {
+  padding: 4rem 0;
+  background-color: var(--color-bg-light);
+  min-height: 60vh;
+}
+
+/* Category Filter */
+.categoryFilter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  padding: 0 20px;
+}
+
+.filterBtn {
+  background-color: var(--color-white);
+  color: var(--color-text-muted);
+  border: 2px solid var(--color-primary-light);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition-speed);
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.filterBtn:hover {
+  background-color: var(--color-primary-light);
+  color: var(--color-white);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-light);
+}
+
+.filterBtn.active {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+}
+
+/* Tools Grid */
+.toolsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 2.5rem;
+  margin-top: 2rem;
+  padding: 0 20px;
+  align-items: start;
+}
+
+/* Tool Card */
+.toolCard {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  transition: all var(--transition-speed);
+  opacity: 0;
+  transform: translateY(40px);
+  display: flex;
+  flex-direction: column;
+  will-change: opacity, transform;
+  height: 100%;
+  min-height: 550px;
+}
+
+.toolCard.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.toolCard:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-strong);
+}
+
+.toolCard.visible:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+.toolImageContainer {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  transition: transform 0.4s ease;
+  display: block;
+  background-color: var(--color-white);
+  min-height: 280px;
+}
+
+.toolCard:hover .toolImage {
+  transform: scale(1.05);
+}
+
+/* Ensure image loads properly */
+.toolImage[src=""] {
+  display: none;
+}
+
+.toolImage:not([src]) {
+  display: none;
+}
+
+.categoryBadge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.toolContent {
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+.toolContent h3 {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.toolDescription {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  margin-bottom: 1.25rem;
+  flex-grow: 1;
+}
+
+.specifications {
+  margin-top: auto;
+  padding-top: 1.25rem;
+  border-top: 2px solid var(--color-bg-light);
+}
+
+.specifications h4 {
+  font-family: var(--font-heading);
+  color: var(--color-primary-dark);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.specifications p {
+  font-size: 0.9rem;
+  color: var(--color-text-light);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* No Results */
+.noResults {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--color-text-muted);
+  font-size: 1.2rem;
+}
+
+/* Animations */
+@keyframes fadeUp {
+  0% {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .toolsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 7vw, 3.7rem);
+  }
+
+  .hero p {
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: 50vh;
+    padding: 100px 20px 60px;
+  }
+
+  .toolsSection {
+    padding: 3rem 0;
+  }
+
+  .toolsGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 0 15px;
+  }
+
+  .categoryFilter {
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+
+  .filterBtn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .toolContent {
+    padding: 1.5rem;
+  }
+
+  .toolImageContainer {
+    height: 250px;
+  }
+
+  .toolCard {
+    min-height: 500px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding: 90px 15px 50px;
+  }
+
+  .toolsGrid {
+    gap: 1.5rem;
+  }
+
+  .categoryFilter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterBtn {
+    width: 100%;
+  }
+}
+
+/* Accessibility Improvements */
+.filterBtn:focus-visible,
+.toolCard:focus-visible {
+  outline: 3px solid var(--color-secondary-light);
+  outline-offset: 3px;
+}
+
+/* Text selection styling */
+::-moz-selection {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+}
+
+::selection {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+}
