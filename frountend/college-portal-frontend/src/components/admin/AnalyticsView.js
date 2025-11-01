@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { getTeacherAverageRatingsApi } from "../../api/adminAPI";
+import { getTeacherAverageRatingsApi } from "../../api/adminAPI.js";
 import { toast } from "react-toastify";
 import { Star, User, ArrowUpDown } from "lucide-react";
 import {

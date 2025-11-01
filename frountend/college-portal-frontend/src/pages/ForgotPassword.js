@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { forgotPasswordApi } from '../api/authApi';
+import { forgotPasswordApi } from '../api/authApi.js';
 import AuthForm from '../components/AuthForm';
 import styles from '../styles/Auth.module.css';
 

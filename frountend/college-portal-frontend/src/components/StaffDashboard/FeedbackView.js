@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../../styles/StaffDashboard.module.css';
-import { getStaffFeedbackApi } from '../../api/staffApi';
+import { getStaffFeedbackApi } from '../../api/staffApi.js';
 
 const FeedbackView = () => {
     const [feedbacks, setFeedbacks] = useState([]);
