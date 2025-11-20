@@ -23,16 +23,16 @@ import {
 
 const leadershipData = [
   {
-    name: "Dr. K. L. Verma",
+    name: "Dr. Veeresh MU",
     title: "Principal",
-    bio: "With over 25 years of experience, Dr. Verma is dedicated to fostering an environment of innovation and academic rigor.",
-    img: "https://randomuser.me/api/portraits/men/72.jpg",
+    bio: "With over 25 years of experience, Dr. Veeresh has is dedication to fostering an environment of innovation and academic rigor.",
+    img: "vice.jpg",
   },
   {
-    name: "Dr. P. S. Rao",
-    title: "Vice-Principal",
-    bio: "Dr. Rao's passion for technical education drives our institute's commitment to hands-on, practical learning and student success.",
-    img: "https://randomuser.me/api/portraits/men/73.jpg",
+    name: "Dr. Jagadish MU",
+    title: "President",
+    bio: "Dr. Jagadish MU's passion for technical education drives our institute's commitment to hands-on, practical learning and student success.",
+    img: "princi.jpg",
   },
 ];
 

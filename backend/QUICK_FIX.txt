@@ -1,0 +1,25 @@
+IMMEDIATE FIX STEPS:
+
+1. Go to Supabase Dashboard: https://supabase.com/dashboard
+   - Check if database is paused → Click "Resume" if paused
+   - Wait 2 minutes for it to start
+
+2. Go to Render Dashboard: https://dashboard.render.com
+   - Your backend service → Environment tab
+   - Find DATABASE_URL
+   - UPDATE to use port 6543 (Connection Pooling):
+   
+   postgresql://postgres:Geethavb9008@db.ojlnokrkvdwboysfsiei.supabase.co:6543/postgres?pgbouncer=true&sslmode=require
+
+3. Save → Render auto-redeploys → Wait 3-5 minutes
+
+4. Test: curl https://collage-portal-r5j6.onrender.com/
+
+ALTERNATIVE: If Supabase keeps failing, use Render PostgreSQL:
+1. Create Render PostgreSQL database
+2. Use Internal Database URL from Render
+3. Update DATABASE_URL in Render
+4. Deploy
+
+
+
