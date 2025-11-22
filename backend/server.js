@@ -33,6 +33,7 @@ const corsOptions = {
     "https://collage-portal-h9kw84t0h-adithyasy105s-projects.vercel.app", // Vercel production
     "https://collage-portal-5sh1rnifb-adithyasy105s-projects.vercel.app", // Vercel preview
     "https://collage-portal-sigma.vercel.app", // Vercel custom domain
+    "https://umachagiiti.vercel.app/",//another domain name
     process.env.FRONTEND_URL // Environment variable override
   ].filter(Boolean), // Remove any undefined values
   credentials: true,
